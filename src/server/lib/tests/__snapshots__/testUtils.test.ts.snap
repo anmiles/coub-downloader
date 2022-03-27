@@ -1,0 +1,45 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`src/server/lib/testUtils createTestCoub should create test coub given id 1`] = `
+Object {
+  "file_versions": Object {
+    "html5": Object {
+      "audio": Object {},
+      "video": Object {},
+    },
+  },
+  "likes_count": 1,
+  "media_blocks": Object {
+    "external_raw_videos": Array [],
+  },
+  "permalink": "testID",
+  "picture": "testID.jpg",
+  "title": "Title: testID",
+  "views_count": 1,
+}
+`;
+
+exports[`src/server/lib/testUtils createTestCoub should create test coub given id and override 1`] = `
+Object {
+  "file_versions": Object {
+    "html5": Object {
+      "audio": Object {},
+      "video": Object {
+        "high": Object {
+          "size": 5,
+          "url": "high",
+        },
+      },
+    },
+  },
+  "likes_count": 1,
+  "media_blocks": Object {
+    "external_raw_videos": Array [],
+  },
+  "permalink": "testID",
+  "picture": "testID.jpg",
+  "test": "value",
+  "title": "Title: testID",
+  "views_count": 1,
+}
+`;

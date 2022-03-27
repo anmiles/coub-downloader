@@ -1,0 +1,77 @@
+<style type="text/css">
+	body {
+		font-family: Helvetica, Arial, "Lucida Grande", sans-serif;
+		font-size: 15px;
+	}
+
+	.coub {
+		width: 640px;
+		max-width: 100%;
+		margin: 2em auto;
+		position: relative;
+	}
+
+	video {
+		width: 100%;
+		max-height: 480px;
+		background-color: #fafafa;
+		border: 1px solid #e1e1e1;
+		border-radius: 6px;
+		cursor: pointer;
+	}
+
+	audio {
+		display: none;
+	}
+
+	.fullscreen-toggle {
+		font-size: 2em;
+		color: white;
+		position: absolute;
+		right: 0.25em;
+		top: 0.25em;
+		line-height: 100%;
+		cursor: pointer;
+		opacity: 0.5;
+	}
+
+	.fullscreen-toggle:hover {
+		opacity: 0.75;
+	}
+
+	:fullscreen video {
+		max-height: none;
+		height: 100%;
+		background: none;
+		border: none;
+	}
+
+	.description {
+		margin-top: 0.5em;
+	}
+
+	.description * {
+		line-height: 26px;
+	}
+
+	.stats {
+		float: right;
+		margin-left: 1em;
+	}
+
+	.title {
+		font-size: 22px;
+		font-weight: bold;
+		letter-spacing: -0.4px;
+	}
+
+	.external {
+		font-weight: bold;
+		text-decoration: none;
+		color: #0332ff;
+	}
+
+	.like {
+		color: red;
+	}
+</style>

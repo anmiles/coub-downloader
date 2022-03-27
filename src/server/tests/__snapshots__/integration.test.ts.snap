@@ -1,0 +1,57 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`src/server/integration should work 1`] = `
+Object {
+  "filename": "src/server/tests/output/media/test1/test1.jpg",
+  "hash": "979cd36f2494ea1cd5fb06859f23f3f3ef017a46a86896b04a884977461c2592",
+}
+`;
+
+exports[`src/server/integration should work 2`] = `
+Object {
+  "filename": "src/server/tests/output/media/test1/test1.mp4",
+  "hash": "96975c27e31beecacbc162898ba8b7a4cd57c1d522cebf2e372ae8e57a71aa61",
+}
+`;
+
+exports[`src/server/integration should work 3`] = `
+Object {
+  "filename": "src/server/tests/output/media/test2/test2.jpg",
+  "hash": "51efbd6c5eef1fd7d25cc74f1704ce3645e1f7c110a0a93a3fa90028acdad7f7",
+}
+`;
+
+exports[`src/server/integration should work 4`] = `
+Object {
+  "filename": "src/server/tests/output/media/test2/test2.mp3",
+  "hash": "2537137ca6972a4bf4f2fcbcca77eb8cea7c72852a19da08b26b5e9737525843",
+}
+`;
+
+exports[`src/server/integration should work 5`] = `
+Object {
+  "filename": "src/server/tests/output/media/test2/test2.mp4",
+  "hash": "a19c9afbaa6cad1af57928176634848f08b9c695aa1c810a011fecab73111a79",
+}
+`;
+
+exports[`src/server/integration should work 6`] = `
+Object {
+  "filename": "src/server/tests/output/media/test3/test3.jpg",
+  "hash": "3f3ab946df1ecadeadcc9d9eaad11ddd4c7efdf9b8f46785ae975e98788169a8",
+}
+`;
+
+exports[`src/server/integration should work 7`] = `
+Object {
+  "filename": "src/server/tests/output/media/test3/test3.mp3",
+  "hash": "69b573ab13dac7314538195912676c1a4900114ed2cba3d5f453b8fd47c2432d",
+}
+`;
+
+exports[`src/server/integration should work 8`] = `
+Object {
+  "filename": "src/server/tests/output/media/test3/test3.mp4",
+  "hash": "3b369d1166b9b5986fb909d1f633180c0d65188321af554cc477d1282bc6524d",
+}
+`;

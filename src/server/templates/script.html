@@ -1,0 +1,63 @@
+<script type="text/javascript">
+window.addEventListener('load', function () {
+	var currentVideo = null;
+	var topEdges = [];
+
+	function start(video) {
+		if (currentVideo) {
+			if (currentVideo === video) return;
+			currentVideo.pause();
+		}
+		currentVideo = video;
+		video.play();
+	}
+
+	function stop(video) {
+		currentVideo = null;
+		video.pause();
+	}
+
+	Array.from(document.querySelectorAll('video')).forEach(function(video) {
+		const container = video.parentNode;
+		video.muted = true;
+		topEdges[container.offsetTop] = video;
+		var audio = video.nextElementSibling;
+		var fullscreen = audio.nextElementSibling;
+
+		video.onplay = function(){
+			audio.play();
+		};
+
+		video.onpause = function(){
+			audio.pause();
+		};
+
+		video.onclick = function() {
+			video === currentVideo ? stop(video) : start(video);
+		};
+
+		fullscreen.onclick = function() {
+			document.fullscreenElement ? document.exitFullscreen() : container.requestFullscreen();
+		};
+	});
+
+	var topEdgeKeys = Object.keys(topEdges);
+
+	window.scrollTimeout = null;
+
+	window.onscroll = function(){
+		if (window.scrollTimeout) clearTimeout(window.scrollTimeout);
+
+		window.scrollTimeout = setTimeout(function(){
+			for (var i in topEdgeKeys) {
+				if (topEdgeKeys[i] > window.scrollY) {
+					if (currentVideo) {
+						start(topEdges[topEdgeKeys[i]]);
+					}
+					break;
+				}
+			}
+		}, 100);
+	};
+});	
+</script>

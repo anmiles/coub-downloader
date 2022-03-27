@@ -1,0 +1,17 @@
+{
+	"compilerOptions": {
+		"esModuleInterop": true,
+		"moduleResolution": "node",
+		"noImplicitAny": true,
+		"strictNullChecks": true,
+		"allowSyntheticDefaultImports": true,
+	},
+	"exclude": [
+		"**/.coverage/",
+		"**/dist/",
+		"**/input/",
+		"**/node_modules/",
+		"**/output/",
+		"**/*.test.ts"
+	]
+}
