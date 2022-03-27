@@ -2,11 +2,16 @@
 
 Downloads your favourite and liked coubs into local html file
 
-> WARNING
-> This software is being provided "as-is".
-> Author was fully tested it in his environment but doesn't guarantee it to be working samely on your computer.
-> Make sure that you understand what you do.
-> Never execute external code in your developer console or launch unknown HTML files on your computer.
+## IMPORTANT
+
+**Due to recent incidents with some popular npm packages compromised, please do any actions below only using isolated (sandbox) environment.**
+
+## WARNING
+
+- This software is being provided "as-is".
+- Author was fully tested it locally, but doesn't guarantee it to be working samely on your computer.
+- Make sure that you understand what you do.
+- Never execute external code in your developer console or launch unknown HTML files on your computer.
 
 ## Installation
 
