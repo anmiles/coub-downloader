@@ -55,10 +55,13 @@ export default class Downloader {
 	async downloadMedia(id: string, url: string | undefined): Promise<void> {
 		if (url === undefined) return;
 
-		const whitelistedHost = 'https://coub-anubis-a.akamaized.net/';
+		const whitelistedHosts = [
+			'https://coub-anubis-a.akamaized.net/',
+			'https://coub-attachments.akamaized.net/'
+		];
 
-		if (!url.startsWith(whitelistedHost)) {
-			throw `Media url ${url} is not belong to whitelisted host ${whitelistedHost}`;
+		if (whitelistedHosts.filter(host => url.startsWith(host)).length === 0) {
+			throw `Media url ${url} is not belong to any of whitelisted hosts ${whitelistedHosts.join(' ')}`;
 		}
 
 		const filename = this.createMediaFilename(id, url);

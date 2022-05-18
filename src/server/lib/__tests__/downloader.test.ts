@@ -225,7 +225,7 @@ describe('src/server/lib/downloader', () => {
 
 		it('should throw if URL is not belong to whitelisted host', async () => {
 			const url = 'http://wrong.url';
-			const error = 'Media url http://wrong.url is not belong to whitelisted host https://coub-anubis-a.akamaized.net/';
+			const error = 'Media url http://wrong.url is not belong to any of whitelisted hosts https://coub-anubis-a.akamaized.net/ https://coub-attachments.akamaized.net/';
 			await expect(() => downloader.downloadMedia(id, url)).rejects.toBe(error);
 		});
 

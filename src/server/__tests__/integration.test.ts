@@ -34,7 +34,8 @@ function checkFileHash(filename: string) {
 }
 
 describe('src/server/integration', () => {
-	const baseDir = 'src/server/tests';
+	// Launching `npm run build:server` is needed for getting this test passed
+	const baseDir = 'src/server/__tests__';
 	if (!fs.existsSync(baseDir)) fs.mkdirSync(baseDir);
 
 	const filename = `${baseDir}/coubs.json`;
