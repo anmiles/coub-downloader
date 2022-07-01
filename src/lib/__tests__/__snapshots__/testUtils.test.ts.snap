@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`src/server/lib/testUtils createTestCoub should create test coub given id 1`] = `
+exports[`src/lib/testUtils createTestCoub should create test coub given id 1`] = `
 Object {
   "file_versions": Object {
     "html5": Object {
@@ -19,7 +19,7 @@ Object {
 }
 `;
 
-exports[`src/server/lib/testUtils createTestCoub should create test coub given id and override 1`] = `
+exports[`src/lib/testUtils createTestCoub should create test coub given id and override 1`] = `
 Object {
   "file_versions": Object {
     "html5": Object {

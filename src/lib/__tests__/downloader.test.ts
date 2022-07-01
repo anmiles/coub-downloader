@@ -83,7 +83,7 @@ beforeEach(() => {
 	};
 });
 
-describe('src/server/lib/downloader', () => {
+describe('src/lib/downloader', () => {
 	describe('download', () => {
 		it('should get coubs file', async () => {
 			await original.download(profile);

@@ -12,7 +12,6 @@ module.exports = {
 		'!<rootDir>/src/**/*.d.ts',
 		'!<rootDir>/src/*.ts',
 		'!<rootDir>/src/types/*.ts',
-		'!<rootDir>/src/client/types/*.ts',
 
 		'!**/node_modules/**',
 		'!**/__tests__/**',

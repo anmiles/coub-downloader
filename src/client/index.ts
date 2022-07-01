@@ -14,7 +14,7 @@ export class DownloadCoubClient {
 
 	/* istanbul ignore next */
 	async getJSON(url: string): Promise<CoubsJson> {
-		return await jQuery.get(url) as CoubsJson;
+		return await window.jQuery.get(url) as CoubsJson;
 	}
 
 	async downloadCoubs(coubs: unknown[], type: CoubsType, modalPopup: ModalPopup, interval: number) {
@@ -47,7 +47,7 @@ export class DownloadCoubClient {
 		document.body.removeChild(element);
 	}
 
-	async execute() {
+	async execute(profile: string) {
 		const modalPopup       = this.showPopup();
 		const interval         = 300;
 		const coubs: unknown[] = [];
@@ -55,7 +55,7 @@ export class DownloadCoubClient {
 		await this.downloadCoubs(coubs, 'likes', modalPopup, interval);
 		await this.downloadCoubs(coubs, 'favourites', modalPopup, interval);
 
-		this.downloadFile('coubs.json', JSON.stringify(coubs, null, '\t'));
+		this.downloadFile(`${profile}.json`, JSON.stringify(coubs, null, '\t'));
 
 		modalPopup.popup.close();
 	}
@@ -63,6 +63,10 @@ export class DownloadCoubClient {
 
 /* istanbul ignore next */
 if (window.location.host === 'coub.com') {
-	new DownloadCoubClient().execute();
+	const profile = window.prompt('Choose profile');
+
+	if (profile) {
+		new DownloadCoubClient().execute(profile);
+	}
 }
 

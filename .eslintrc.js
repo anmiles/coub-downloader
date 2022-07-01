@@ -15,8 +15,8 @@ module.exports = {
 		'jest',
 	],
 	env : {
-		node    : true,
-		jest    : true,
+		node : true,
+		jest : true,
 	},
 	ignorePatterns : [
 		'**/node_modules/',

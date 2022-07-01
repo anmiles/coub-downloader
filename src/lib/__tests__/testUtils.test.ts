@@ -22,7 +22,7 @@ const override: Partial<Coub> = {
 	/* eslint-enable camelcase */
 };
 
-describe('src/server/lib/testUtils', () => {
+describe('src/lib/testUtils', () => {
 	describe('createTestCoub', () => {
 		it('should create test coub given id', () => {
 			const testCoub = testUtils.createTestCoub(id);

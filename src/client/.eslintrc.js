@@ -6,6 +6,6 @@ module.exports = {
 		node    : true,
 		jest    : true,
 		browser : true,
-		jQuery  : true,
+		jquery  : true,
 	},
 };

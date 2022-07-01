@@ -9,7 +9,7 @@ export default { getOutputDir, getMediaDir, getTemplateDir, getCoubsFile, getPro
 const dirPaths = {
 	input     : 'input',
 	output    : 'output',
-	templates : 'src/server/templates',
+	templates : 'src/templates',
 };
 
 function getOutputDir(profile: string): string {

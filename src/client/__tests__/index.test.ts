@@ -6,35 +6,37 @@ import { DownloadCoubClient } from '../index';
 import { ModalPopup } from '../types/index';
 
 const modalPopup = {
-	show: () => modalPopup,
-	setContent: jest.fn(),
-	popup: {
-		close: jest.fn()
-	}
+	show       : () => modalPopup,
+	setContent : jest.fn(),
+	popup      : {
+		close : jest.fn(),
+	},
 };
 
 DownloadCoubClient.prototype.showPopup = () => modalPopup;
 
 const client = new DownloadCoubClient();
 
-const type = 'likes';
-const interval = 300;
+const type       = 'likes';
+const interval   = 300;
 const totalPages = 3;
+const profile    = 'username';
 
 let pageID: number;
 let coubID: number;
 
 let getJSONSpy: jest.SpyInstance;
 
-function generateCoub(){
-	return {id: coubID++};
+function generateCoub() {
+	return { id : coubID++ };
 }
 
-function generateJSON(){
+function generateJSON() {
 	return {
-		page: pageID++,
-		total_pages: totalPages,
-		coubs: [generateCoub(), generateCoub()],
+		page        : pageID++,
+		// eslint-disable-next-line camelcase
+		total_pages : totalPages,
+		coubs       : [ generateCoub(), generateCoub() ],
 	};
 }
 
@@ -54,14 +56,18 @@ describe('src/client/index', () => {
 	describe('sleep', () => {
 		it('should call setTimeout', async () => {
 			const setTimeoutSpy = jest.spyOn(global, 'setTimeout');
+
 			await client.sleep(sleepMilliseconds);
+
 			expect(setTimeoutSpy.mock.calls[0][1]).toBe(sleepMilliseconds);
 			setTimeoutSpy.mockRestore();
 		});
 
 		it('should wait specified timeout', async () => {
-			const before = new Date().getTime(); 
+			const before = new Date().getTime();
+
 			await client.sleep(sleepMilliseconds);
+
 			const after = new Date().getTime();
 			expect(after - before).toBeGreaterThanOrEqual(sleepMilliseconds);
 		});
@@ -73,13 +79,13 @@ describe('src/client/index', () => {
 		let modalPopup: ModalPopup;
 
 		beforeAll(() => {
-			sleepSpy = jest.spyOn(client, 'sleep');
-			modalPopup = client.showPopup();
+			sleepSpy      = jest.spyOn(client, 'sleep');
+			modalPopup    = client.showPopup();
 			setContentSpy = jest.spyOn(modalPopup, 'setContent');
 		});
 
 		it('should download json', async () => {
-			const coubs = [generateCoub(), generateCoub()];
+			const coubs = [ generateCoub(), generateCoub() ];
 
 			await client.downloadCoubs(coubs, type, modalPopup, interval);
 
@@ -89,7 +95,7 @@ describe('src/client/index', () => {
 		});
 
 		it('should set popup content', async () => {
-			const coubs = [generateCoub(), generateCoub()];
+			const coubs = [ generateCoub(), generateCoub() ];
 
 			await client.downloadCoubs(coubs, type, modalPopup, interval);
 
@@ -98,7 +104,7 @@ describe('src/client/index', () => {
 		});
 
 		it('should sleep on each request', async () => {
-			const coubs = [generateCoub(), generateCoub()];
+			const coubs = [ generateCoub(), generateCoub() ];
 
 			await client.downloadCoubs(coubs, type, modalPopup, interval);
 
@@ -107,7 +113,7 @@ describe('src/client/index', () => {
 		});
 
 		it('should append to coubs', async () => {
-			const coubs = [generateCoub(), generateCoub()];
+			const coubs = [ generateCoub(), generateCoub() ];
 
 			await client.downloadCoubs(coubs, type, modalPopup, interval);
 
@@ -117,7 +123,7 @@ describe('src/client/index', () => {
 
 	describe('downloadFile', () => {
 		const filename = 'filename';
-		const text = 'text';
+		const text     = 'text';
 
 		let clickSpy: jest.SpyInstance;
 		let downloadLink: HTMLAnchorElement;
@@ -129,13 +135,14 @@ describe('src/client/index', () => {
 		beforeEach(() => {
 			downloadLink = document.createElement('a');
 
-			clickSpy.mockImplementation(function(){
+			clickSpy.mockImplementation(function() {
 				downloadLink = this;
 			});
 		});
 
 		it('should create and click download link', () => {
 			client.downloadFile(filename, text);
+
 			expect(downloadLink.outerHTML).toBe('<a href="data:text/plain;charset=utf-8,text" download="filename" style="display: none;"></a>');
 		});
 	});
@@ -143,32 +150,32 @@ describe('src/client/index', () => {
 	describe('execute', () => {
 		let downloadCoubsSpy: jest.SpyInstance;
 		let downloadFileSpy: jest.SpyInstance;
-		let closePopupSpy: jest.SpyInstance;	
+		let closePopupSpy: jest.SpyInstance;
 
 		beforeAll(() => {
 			downloadCoubsSpy = jest.spyOn(client, 'downloadCoubs');
-			downloadFileSpy = jest.spyOn(client, 'downloadFile');
-			closePopupSpy = jest.spyOn(modalPopup.popup, 'close');
+			downloadFileSpy  = jest.spyOn(client, 'downloadFile');
+			closePopupSpy    = jest.spyOn(modalPopup.popup, 'close');
 		});
 
 		beforeEach(() => {
-			downloadCoubsSpy.mockImplementation((coubs) => [...coubs, generateCoub(), generateCoub()]);
+			downloadCoubsSpy.mockImplementation((coubs) => [ ...coubs, generateCoub(), generateCoub() ]);
 		});
 
 		it('should download likes and favourites', async () => {
-			await client.execute();
+			await client.execute(profile);
 
 			expect(downloadCoubsSpy.mock.calls).toMatchSnapshot();
 		});
 
 		it('should download JSON file', async () => {
-			await client.execute();
+			await client.execute(profile);
 
 			expect(downloadFileSpy.mock.calls).toMatchSnapshot();
 		});
 
 		it('should close popup', async () => {
-			await client.execute();
+			await client.execute(profile);
 
 			expect(closePopupSpy).toBeCalled();
 		});

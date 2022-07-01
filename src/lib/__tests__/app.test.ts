@@ -31,7 +31,7 @@ beforeEach(() => {
 	existingProfiles = [ profile1, profile2 ];
 });
 
-describe('src/server/lib/app', () => {
+describe('src/lib/app', () => {
 	describe('run', () => {
 		it('should restrict old files', async () => {
 			await app.run();

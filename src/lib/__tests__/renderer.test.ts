@@ -41,7 +41,7 @@ const coubs           = [ coub1, coub2 ];
 const unescapedString = '<a href="url">text &lt;</a>';
 const escapedString   = '<a href="url">text &lt;</a>';
 
-describe('src/server/lib/renderer', () => {
+describe('src/lib/renderer', () => {
 	describe('render', () => {
 		it('should get templates', () => {
 			original.render(profile, coubs);

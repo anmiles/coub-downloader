@@ -124,7 +124,7 @@ Array [
 exports[`src/client/index execute should download JSON file 1`] = `
 Array [
   Array [
-    "coubs.json",
+    "username.json",
     "[]",
   ],
 ]

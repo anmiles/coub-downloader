@@ -39,15 +39,17 @@ You can create as many profiles as you want.
 ## Downloading
 
 1. Download all coubs metadata
-	- Copy script from `./dist/client/index.html` into clipboard
-	- Open `https://coub.com` in the browser and log in
+	- Copy script from `./dist/client/index.js` into clipboard
+	- Open `https://coub.com` in the browser
+	- Log in
 	- Open developer console
 	- Paste script and execute
 		- note to remove `export ` at the very top of the script
+	- When asked, choose profile (see [Adding profiles](#adding-profiles) above).
 	- Look at the downloading progress
-	- JSON file will be asked to download, save it as `input/coubs.json`
+	- JSON file will be asked to download, save it as to `input` directory
 2. Download all coubs media files
-	- `npm start ./input/coubs.json output`
+	- `npm start`
 
 ## Usage
 
