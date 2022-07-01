@@ -24,7 +24,9 @@
     "test:watch": "jest --watch",
     "test:watch:coverage": "jest --watch --coverage",
     "test:report:coverage": "nyc report --nycrc-path ./coverage.config.js -t ./coverage --report-dir ./coverage",
-    "start": "node ./dist/server/index.js"
+    "start": "node ./dist/server/index.js",
+    "create": "node ./dist/server/create.js",
+    "migrate": "node ./dist/server/migrate.js"
   },
   "dependencies": {
     "axios": "^0.27.2",

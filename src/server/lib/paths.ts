@@ -3,7 +3,7 @@ import path from 'path';
 
 import paths from './paths';
 
-export { getOutputDir, getMediaDir, getTemplateDir, getCoubsFile, getProfilesFile, getIndexFile, getMediaFile };
+export { getOutputDir, getMediaDir, getTemplateDir, getCoubsFile, getProfilesFile, getIndexFile, getMediaFile, ensureDir, ensureFile };
 export default { getOutputDir, getMediaDir, getTemplateDir, getCoubsFile, getProfilesFile, getIndexFile, getMediaFile, ensureDir, ensureFile };
 
 const dirPaths = {
