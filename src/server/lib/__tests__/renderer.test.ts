@@ -1,133 +1,131 @@
+/* eslint-disable camelcase */
 import fs from 'fs';
 import path from 'path';
-import Renderer from '../renderer';
+import paths from '../paths';
 import { createTestCoub } from '../testUtils';
-import type { CoubFile } from '../../types/coub';
+import type { CoubFile } from '../../types';
 
-jest.mock('fs');
-jest.mock('path');
+import renderer from '../renderer';
+const original = jest.requireActual('../renderer').default as typeof renderer;
+jest.mock<typeof renderer>('../renderer', () => ({
+	render              : jest.fn(),
+	getTemplates        : jest.fn().mockImplementation(() => templates),
+	formatCoub          : jest.fn().mockImplementation((coub) => `${coub.permalink}_formatted`),
+	preventUnsafeString : jest.fn(),
+	escapeString        : jest.fn(),
+	format              : jest.fn().mockImplementation((rootTemplate) => `${rootTemplate}_formatted`),
+}));
 
-const renderer = new Renderer();
+jest.mock<Partial<typeof fs>>('fs', () => ({
+	writeFileSync : jest.fn(),
+	readdirSync   : jest.fn().mockImplementation(() => Object.keys(templates)),
+	readFileSync  : jest.fn().mockImplementation((filename) => `{${filename}}`),
+}));
+
+jest.mock<Partial<typeof path>>('path', () => ({
+	join : jest.fn().mockImplementation((...paths) => paths.join('/')),
+}));
+
+jest.mock<Partial<typeof paths>>('../paths', () => ({
+	getIndexFile   : jest.fn().mockImplementation(() => indexFile),
+	getTemplateDir : jest.fn().mockImplementation(() => templateDir),
+}));
+
+const profile         = 'username';
+const indexFile       = 'indexFile';
+const templateDir     = 'templateDir';
+const templates       = { template1 : 'html1', template2 : 'html2' };
+const coub1           = createTestCoub('coub1');
+const coub2           = createTestCoub('coub2');
+const coubs           = [ coub1, coub2 ];
+const unescapedString = '<a href="url">text &lt;</a>';
+const escapedString   = '<a href="url">text &lt;</a>';
 
 describe('src/server/lib/renderer', () => {
-	const htmlFilename = 'htmlFilename';
-	const templatePath = 'templatePath';
-	const templates = {'template1': 'html1', 'template2': 'html2'};
-	const coub1 = createTestCoub('coub1');
-	const coub2 = createTestCoub('coub2');
-	const coubs = [coub1, coub2];
-	const unescapedString = '<a href="url">text &lt;</a>';
-	const escapedString = '<a href="url">text &lt;</a>';
-
 	describe('render', () => {
-		beforeAll(() => {
-			jest.spyOn(renderer, 'getTemplates').mockReturnValue(templates);
-			jest.spyOn(renderer, 'formatCoub').mockImplementation((coub) => `${coub.permalink}_formatted`);
-			jest.spyOn(renderer, 'format').mockImplementation(rootTemplate => `${rootTemplate}_formatted`);
-		});
+		it('should get templates', () => {
+			original.render(profile, coubs);
 
-		afterEach(() => {
-			jest.clearAllMocks();
-		});
-		
-		afterAll(() => {
-			jest.restoreAllMocks();
-		});
-		
-		it('should get templates by templatePath', () => {
-			renderer.render(htmlFilename, templatePath, coubs);
-			expect(renderer.getTemplates).toBeCalledWith(templatePath);
+			expect(renderer.getTemplates).toBeCalledWith();
 		});
 
 		it('should format each coub', () => {
-			renderer.render(htmlFilename, templatePath, coubs);
+			original.render(profile, coubs);
+
 			expect(renderer.formatCoub).toBeCalledWith(coub1, templates);
 			expect(renderer.formatCoub).toBeCalledWith(coub2, templates);
 		});
 
 		it('should format index template using concatenated coubs', () => {
-			renderer.render(htmlFilename, templatePath, coubs);
-			expect(renderer.format).toBeCalledWith('index', {coubs: 'coub1_formatted\ncoub2_formatted'}, templates);
+			original.render(profile, coubs);
+
+			expect(renderer.format).toBeCalledWith('index', { coubs : 'coub1_formatted\ncoub2_formatted' }, templates);
 		});
 
 		it('should output formatted index template to html file', () => {
-			renderer.render(htmlFilename, templatePath, coubs);
-			expect(fs.writeFileSync).toBeCalledWith(htmlFilename, 'index_formatted');
+			original.render(profile, coubs);
+
+			expect(fs.writeFileSync).toBeCalledWith(indexFile, 'index_formatted');
 		});
 	});
 
 	describe('getTemplates', () => {
-		beforeAll(() => {
-			jest.spyOn(fs, 'readdirSync').mockReturnValue(Object.keys(templates) as unknown as fs.Dirent[]);
-			jest.spyOn(fs, 'readFileSync').mockImplementation(filename => `{${filename}}`);
-			jest.spyOn(path, 'join').mockImplementation((...paths) => paths.join('/'));
+		it('should get template directory', () => {
+			original.getTemplates();
+
+			expect(paths.getTemplateDir).toBeCalledWith();
 		});
 
-		afterEach(() => {
-			jest.clearAllMocks();
-		});
-		
-		afterAll(() => {
-			jest.restoreAllMocks();
-		});
-		
 		it('should read template directory', () => {
-			renderer.getTemplates(templatePath);
-			expect(fs.readdirSync).toBeCalledWith(templatePath);
+			original.getTemplates();
+
+			expect(fs.readdirSync).toBeCalledWith(templateDir);
 		});
 
 		it('should read each template', () => {
-			renderer.getTemplates(templatePath);
-			expect(fs.readFileSync).toBeCalledWith('templatePath/template1');
-			expect(fs.readFileSync).toBeCalledWith('templatePath/template2');
+			original.getTemplates();
+
+			expect(fs.readFileSync).toBeCalledWith('templateDir/template1');
+			expect(fs.readFileSync).toBeCalledWith('templateDir/template2');
 		});
 
 		it('should return indexed templates collection', () => {
-			const result = renderer.getTemplates(templatePath);
-			expect(result).toEqual({template1: '{templatePath/template1}', template2: '{templatePath/template2}'});
+			const result = original.getTemplates();
+
+			expect(result).toEqual({ template1 : '{templateDir/template1}', template2 : '{templateDir/template2}' });
 		});
 	});
 
 	describe('formatCoub', () => {
-		beforeAll(() => {
-			jest.spyOn(renderer, 'format').mockImplementation(rootTemplate => `${rootTemplate}_formatted`);
-			jest.spyOn(path, 'join').mockImplementation((...paths) => paths.join('/'));
+		it('should check coub.permalink to be a safe string', () => {
+			const invalidID = 'i%va!id';
+			const coub      = createTestCoub(invalidID);
+
+			original.formatCoub(coub, templates);
+
+			expect(renderer.preventUnsafeString).toBeCalledWith(invalidID, 'coub ID');
 		});
 
-		afterEach(() => {
-			jest.clearAllMocks();
-		});
-	
-		afterAll(() => {
-			jest.restoreAllMocks();
-		});
-
-		it('should throw if coub.permalink is not alphanumeric string', () => {
-			const coub = createTestCoub('i%va!id');
-
-			expect(() => renderer.formatCoub(coub, templates)).toThrowError('coub ID is not alphanumeric string and might be unsafe: i%va!id');
-		});
-	
 		it('should escape coub.title', () => {
-			const coub = createTestCoub('coub1', {title: unescapedString});
+			const coub = createTestCoub('coub1', { title : unescapedString });
 
-			renderer.formatCoub(coub, templates);
+			original.formatCoub(coub, templates);
 
 			coub.title = escapedString;
 			expect(renderer.format).toBeCalledWith('coub', coub, templates);
 		});
-	
+
 		it('should set coub.audio to blank space if audio does not exist', () => {
 			const coub = createTestCoub('coub1', {
-				file_versions: {
-					html5: {
-						audio: undefined as unknown as Record<string, CoubFile>, 
-						video: {}
-					}
-				}
+				file_versions : {
+					html5 : {
+						audio : undefined as unknown as Record<string, CoubFile>,
+						video : {},
+					},
+				},
 			});
 
-			renderer.formatCoub(coub, templates);
+			original.formatCoub(coub, templates);
 
 			coub.audio = '&nbsp;';
 			expect(renderer.format).toBeCalledWith('coub', coub, templates);
@@ -135,15 +133,15 @@ describe('src/server/lib/renderer', () => {
 
 		it('should set coub.audio to blank space if there is no audio', () => {
 			const coub = createTestCoub('coub1', {
-				file_versions: {
-					html5: {
-						audio: {},
-						video: {}
-					}
-				}
+				file_versions : {
+					html5 : {
+						audio : {},
+						video : {},
+					},
+				},
 			});
 
-			renderer.formatCoub(coub, templates);
+			original.formatCoub(coub, templates);
 
 			coub.audio = '&nbsp;';
 			expect(renderer.format).toBeCalledWith('coub', coub, templates);
@@ -151,35 +149,35 @@ describe('src/server/lib/renderer', () => {
 
 		it('should not set coub.audio if audio exists', () => {
 			const coub = createTestCoub('coub1', {
-				file_versions: {
-					html5: {
-						audio: {
-							big: {
-								size: 10,
-								url: 'URL'
-							}
-						}, 
-						video: {}
-					}
-				}
+				file_versions : {
+					html5 : {
+						audio : {
+							big : {
+								size : 10,
+								url  : 'URL',
+							},
+						},
+						video : {},
+					},
+				},
 			});
 
-			renderer.formatCoub(coub, templates);
+			original.formatCoub(coub, templates);
 
 			expect(renderer.format).toBeCalledWith('coub', coub, templates);
 		});
 
 		it('should set coub.externals to blank space if there is no external videos', () => {
 			const coub = createTestCoub('coub1', {
-				file_versions: {
-					html5: {
-						audio: {},
-						video: {}
-					}
-				}
+				file_versions : {
+					html5 : {
+						audio : {},
+						video : {},
+					},
+				},
 			});
 
-			renderer.formatCoub(coub, templates);
+			original.formatCoub(coub, templates);
 
 			coub.externals = '&nbsp;';
 			expect(renderer.format).toBeCalledWith('coub', coub, templates);
@@ -187,43 +185,46 @@ describe('src/server/lib/renderer', () => {
 
 		it('should set coub.externals to formatted externals if there are external videos', () => {
 			const coub = createTestCoub('coub1', {
-				media_blocks: {
-					external_raw_videos: [
-						{title: 'title1', url: 'url1', meta: {service: 'service1'}},
-						{title: 'title2', url: 'url2', meta: {service: 'service2'}}
-					]
-				}
+				media_blocks : {
+					external_raw_videos : [
+						{ title : 'title1', url : 'url1', meta : { service : 'service1' } },
+						{ title : 'title2', url : 'url2', meta : { service : 'service2' } },
+					],
+				},
 			});
 
-			renderer.formatCoub(coub, templates);
+			original.formatCoub(coub, templates);
 
 			coub.externals = 'external_formatted\nexternal_formatted';
 			expect(renderer.format).toBeCalledWith('coub', coub, templates);
 		});
 
-		it('should throw if any of coub.externals have a service.name that is not alphanumeric string', () => {
+		it('should check each of coub.externals to be a safe string', () => {
+			const video1 = { title : 'title1', url : 'url1', meta : { service : 'service1' } };
+			const video2 = { title : 'title2', url : 'url2', meta : { service : 'i%va!id' } };
+
 			const coub = createTestCoub('coub1', {
-				media_blocks: {
-					external_raw_videos: [
-						{title: 'title1', url: 'url1', meta: {service: 'service1'}},
-						{title: 'title2', url: 'url2', meta: {service: 'i%va!id'}}
-					]
-				}
+				media_blocks : {
+					external_raw_videos : [ video1, video2 ],
+				},
 			});
 
-			expect(() => renderer.formatCoub(coub, templates)).toThrowError('service name of external video is not alphanumeric string and might be unsafe: i%va!id');
+			original.formatCoub(coub, templates);
+
+			expect(renderer.preventUnsafeString).toBeCalledWith('service1', 'service name of external video');
+			expect(renderer.preventUnsafeString).toBeCalledWith('i%va!id', 'service name of external video');
 		});
-	
+
 		it('should escape coub.externals.*.title', () => {
 			const coub = createTestCoub('coub1', {
-				media_blocks: {
-					external_raw_videos: [
-						{title: unescapedString, url: 'url1', meta: {service: 'service1'}},
-					]
-				}
+				media_blocks : {
+					external_raw_videos : [
+						{ title : unescapedString, url : 'url1', meta : { service : 'service1' } },
+					],
+				},
 			});
 
-			renderer.formatCoub(coub, templates);
+			original.formatCoub(coub, templates);
 
 			coub.media_blocks.external_raw_videos[0].title = escapedString;
 			expect(renderer.format).toBeCalledWith('coub', coub, templates);
@@ -231,38 +232,45 @@ describe('src/server/lib/renderer', () => {
 
 		it('should throw if coub.likes_count is not a number', () => {
 			const coub = createTestCoub('coub1', {
-				likes_count: 'not_a_number' as unknown as number,
+				likes_count : 'not_a_number' as unknown as number,
 			});
 
-			expect(() => renderer.formatCoub(coub, templates)).toThrowError('coub.likes_count is not_a_number that is not a number');
+			const func = () => original.formatCoub(coub, templates);
+
+			expect(func).toThrowError('coub.likes_count is not_a_number that is not a number');
 		});
 
 		it('should throw if coub.views_count is not a number', () => {
 			const coub = createTestCoub('coub1', {
-				views_count: 'not_a_number' as unknown as number,
+				views_count : 'not_a_number' as unknown as number,
 			});
 
-			expect(() => renderer.formatCoub(coub, templates)).toThrowError('coub.views_count is not_a_number that is not a number');
+			const func = () => original.formatCoub(coub, templates);
+
+			expect(func).toThrowError('coub.views_count is not_a_number that is not a number');
 		});
 
 		it('should format each external block', () => {
 			const coub = createTestCoub('coub1', {
-				media_blocks: {
-					external_raw_videos: [
-						{title: 'title1', url: 'url1', meta: {service: 'service1'}},
-						{title: 'title2', url: 'url2', meta: {service: 'service2'}}
-					]
-				}
+				media_blocks : {
+					external_raw_videos : [
+						{ title : 'title1', url : 'url1', meta : { service : 'service1' } },
+						{ title : 'title2', url : 'url2', meta : { service : 'service2' } },
+					],
+				},
 			});
 
-			renderer.formatCoub(coub, templates);
+			original.formatCoub(coub, templates);
+
 			expect(renderer.format).toBeCalledWith('external', coub.media_blocks.external_raw_videos[0], templates);
 			expect(renderer.format).toBeCalledWith('external', coub.media_blocks.external_raw_videos[1], templates);
 		});
-	
+
 		it('should return formatted coub', () => {
 			const coub = createTestCoub('coub1');
-			const result = renderer.formatCoub(coub, templates);
+
+			const result = original.formatCoub(coub, templates);
+
 			expect(result).toBe('coub_formatted');
 		});
 	});
@@ -270,27 +278,35 @@ describe('src/server/lib/renderer', () => {
 	describe('preventUnsafeString', () => {
 		it('should throw if argument is not a string', () => {
 			const notAString = 5;
-			const error = 'invalidString is not string but number and might be unsafe: 5';
+			const error      = 'invalidString is not string but number and might be unsafe: 5';
 
-			expect(() => renderer.preventUnsafeString(notAString as unknown as string, 'invalidString')).toThrowError(error);
+			const func = () => original.preventUnsafeString(notAString as unknown as string, 'invalidString');
+
+			expect(func).toThrowError(error);
 		});
 
 		it('should throw if argument is not alphanumeric string', () => {
 			const invalidString = 'i#va!id';
-			const error = 'invalidString is not alphanumeric string and might be unsafe: i#va!id';
+			const error         = 'invalidString is not alphanumeric string and might be unsafe: i#va!id';
 
-			expect(() => renderer.preventUnsafeString(invalidString, 'invalidString')).toThrowError(error);
+			const func = () => original.preventUnsafeString(invalidString, 'invalidString');
+
+			expect(func).toThrowError(error);
 		});
 
 		it('should not throw if argument is alphanumeric string', () => {
 			const invalidString = 'valid5string';
-			expect(() => renderer.preventUnsafeString(invalidString, 'invalidString')).not.toThrow();
+
+			const func = () => original.preventUnsafeString(invalidString, 'invalidString');
+
+			expect(func).not.toThrow();
 		});
 	});
 
 	describe('escapeString', () => {
 		it('should escape html-sensitive characters', () => {
-			const escapedString = renderer.escapeString(unescapedString);
+			const escapedString = original.escapeString(unescapedString);
+
 			expect(escapedString).toBe(escapedString);
 		});
 	});
@@ -298,50 +314,50 @@ describe('src/server/lib/renderer', () => {
 	describe('format', () => {
 		it('should find key in json properties and substitute by value', () => {
 			const rootTemplate = 'root';
-			const templates = {root: 'value is {{val}}'};
-			const json = {val: 10};
+			const templates    = { root : 'value is {{val}}' };
+			const json         = { val : 10 };
 
-			const result = renderer.format(rootTemplate, json, templates);
+			const result = original.format(rootTemplate, json, templates);
 
 			expect(result).toBe('value is 10');
 		});
 
 		it('should find key in template names and substitute by template', () => {
 			const rootTemplate = 'root';
-			const templates = {root: 'body: {{body}}', body: 'coubs'};
-			const json = {};
+			const templates    = { root : 'body: {{body}}', body : 'coubs' };
+			const json         = {};
 
-			const result = renderer.format(rootTemplate, json, templates);
+			const result = original.format(rootTemplate, json, templates);
 
 			expect(result).toBe('body: coubs');
 		});
 
 		it('should prefer json properties rather than template names', () => {
 			const rootTemplate = 'root';
-			const templates = {root: 'value is {{val}}', val: '5'};
-			const json = {val: 10};
+			const templates    = { root : 'value is {{val}}', val : '5' };
+			const json         = { val : 10 };
 
-			const result = renderer.format(rootTemplate, json, templates);
+			const result = original.format(rootTemplate, json, templates);
 
 			expect(result).toBe('value is 10');
 		});
 
 		it('should recursively substitute', () => {
 			const rootTemplate = 'root';
-			const templates = {root: 'body: {{body}}', body: 'value is {{val}}'};
-			const json = {val: 10};
+			const templates    = { root : 'body: {{body}}', body : 'value is {{val}}' };
+			const json         = { val : 10 };
 
-			const result = renderer.format(rootTemplate, json, templates);
+			const result = original.format(rootTemplate, json, templates);
 
 			expect(result).toBe('body: value is 10');
 		});
 
 		it('should process nested keys', () => {
 			const rootTemplate = 'root';
-			const templates = {root: 'body: {{body}}', body: 'value is {{val.current}}'};
-			const json = {val: { current: 10}};
+			const templates    = { root : 'body: {{body}}', body : 'value is {{val.current}}' };
+			const json         = { val : { current : 10 } };
 
-			const result = renderer.format(rootTemplate, json, templates);
+			const result = original.format(rootTemplate, json, templates);
 
 			expect(result).toBe('body: value is 10');
 		});

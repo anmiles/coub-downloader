@@ -1,2 +1,3 @@
-import Downloader from './lib/downloader';
-new Downloader().execute(process.argv[2], process.argv[3]);
+import { run } from './lib/app';
+
+run();

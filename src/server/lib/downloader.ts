@@ -1,125 +1,90 @@
 import fs from 'fs';
-import path from 'path';
-import http from 'http';
-import https from 'https';
-import Console from './console';
-import Renderer from './renderer';
+import axios from 'axios';
+import type { Coub } from '../types';
+import { getJSON } from './jsonLib';
+import { log, info, error } from './logger';
+import { getMediaFile, getCoubsFile } from './paths';
+import { render } from './renderer';
 import { sleep } from './sleep';
-import type { Coub } from '../types/coub';
 
-export default class Downloader {
-	outputPath = '';
-	mediaDirname = 'media';
-	htmlFilename = 'index.html';
-	templatePath = './src/server/templates';
-	sleepMilliseconds = 500;
+import downloader from './downloader';
 
-	renderer = new Renderer();
-	console = new Console(process.env.NODE_ENV !== 'test');
+const sleepMilliseconds = 500;
 
-	async execute(filename: string, outputPath = 'output'): Promise<void> {
-		this.outputPath = outputPath;
-		this.createDir();
-		this.createDir(this.mediaDirname);
+export { download };
+export default { download, downloadCoub, downloadMedia, downloadFile, selectBestURL };
 
-		if (!filename) {
-			throw `Usage: node ${process.argv[1]} <filename> [<output_path> = "output"]`;
-		}
+async function download(profile: string): Promise<void> {
+	const coubsFile = getCoubsFile(profile);
+	const coubs     = getJSON<Coub[]>(coubsFile, () => error(`Coubs json ${coubsFile} doesn't exist. Refer to README.md in order to obtain it`) as never);
 
-		if (!fs.existsSync(filename)) {
-			throw `Filename ${filename} does not exist; current directory is ${path.resolve('.')}`;
-		}
-
-		const coubs = JSON.parse(fs.readFileSync(filename).toString()) as Coub[];
-
-		for (const coub of coubs) {
-			await this.downloadCoub(coub);
-		}
-
-		this.renderer.render(path.join(this.outputPath, this.htmlFilename), this.templatePath, coubs);
+	for (const coub of coubs) {
+		await downloader.downloadCoub(profile, coub);
 	}
 
-	async downloadCoub(coub: Coub): Promise<Coub> {
-		this.console.log(`Processing ${coub.permalink}`);
+	render(profile, coubs);
+}
 
-		const videoURL = this.selectBestURL(coub, 'video', true);
-		const audioURL = this.selectBestURL(coub, 'audio');
+async function downloadCoub(profile: string, coub: Coub): Promise<Coub> {
+	log(`Processing ${coub.permalink}`);
 
-		await this.downloadMedia(coub.permalink, videoURL);
-		if (audioURL) await this.downloadMedia(coub.permalink, audioURL);
-		await this.downloadMedia(coub.permalink, coub.picture);
+	const videoURL = downloader.selectBestURL(coub, 'video', true);
+	const audioURL = downloader.selectBestURL(coub, 'audio');
 
-		return coub;
+	await downloader.downloadMedia(profile, coub.permalink, videoURL);
+	if (audioURL) {
+		await downloader.downloadMedia(profile, coub.permalink, audioURL);
+	}
+	await downloader.downloadMedia(profile, coub.permalink, coub.picture);
+
+	return coub;
+}
+
+async function downloadMedia(profile: string, coubID: string, url: string | undefined): Promise<void> {
+	if (url === undefined) {
+		return;
 	}
 
-	async downloadMedia(id: string, url: string | undefined): Promise<void> {
-		if (url === undefined) return;
+	const whitelistedHosts = [
+		'https://coub-anubis-a.akamaized.net/',
+		'https://coub-attachments.akamaized.net/',
+	];
 
-		const whitelistedHosts = [
-			'https://coub-anubis-a.akamaized.net/',
-			'https://coub-attachments.akamaized.net/'
-		];
-
-		if (whitelistedHosts.filter(host => url.startsWith(host)).length === 0) {
-			throw `Media url ${url} is not belong to any of whitelisted hosts ${whitelistedHosts.join(' ')}`;
-		}
-
-		const filename = this.createMediaFilename(id, url);
-
-		if (!fs.existsSync(filename)) {
-			this.console.log(`\tDownloading ${url}`);
-			await sleep(this.sleepMilliseconds);
-			await this.downloadFile(url, filename);
-		}
+	if (whitelistedHosts.filter((host) => url.startsWith(host)).length === 0) {
+		throw `Media url ${url} is not belong to any of whitelisted hosts ${whitelistedHosts.join(' ')}`;
 	}
 
-	async downloadFile(url: string, filename: string): Promise<fs.WriteStream> {
-		return new Promise((resolve, reject) => {
-			const protocol = url.startsWith('https') ? https : http;
+	const mediaFile = getMediaFile(profile, coubID, url);
 
-			protocol.get(url, function(res) {
-				if (res.statusCode !== 200) {
-					reject(`Request to ${url} returned with status code: ${res.statusCode}`);
-					res.resume();
-					return;
-				}
+	if (!fs.existsSync(mediaFile)) {
+		info(`\tDownloading ${url}`);
+		await sleep(sleepMilliseconds);
+		await downloader.downloadFile(url, mediaFile);
+	}
+}
 
-				const stream = fs.createWriteStream(filename);
+async function downloadFile(url: string, filename: string): Promise<void> {
+	const response = await axios({
+		url,
+		method       : 'GET',
+		responseType : 'arraybuffer',
+	});
 
-				res.on('end', function() {
-					resolve(stream);
-				});
-
-				res.pipe(stream);
-			
-			}).on('error', (e) => {
-				reject(`Request to ${url} failed with error: ${e.message}`);
-			});
-		});
+	if (response.status !== 200) {
+		throw `Request to ${url} returned with status code: ${response.status}`;
 	}
 
-	selectBestURL(coub: Coub, key: keyof typeof coub.file_versions.html5, required?: boolean): string | undefined {
-		const fileVersions = coub.file_versions?.html5;
-		const hasVersions = fileVersions && fileVersions[key] !== undefined && Object.keys(fileVersions[key]).length > 0;
-		const bestURL = hasVersions ? Object.values(fileVersions[key]).sort((v1, v2) => v2.size - v1.size)[0].url : undefined;
-	
-		if (bestURL === undefined && required) {
-			throw `There are no file_versions.html5.${key} for coub ${coub.permalink}`;
-		}
-	
-		return bestURL;
-	}	
+	fs.writeFileSync(filename, Buffer.from(response.data));
+}
 
-	createDir(...paths: string[]) {
-		const dirPath = path.join(this.outputPath, ...paths);
-		const exists = fs.existsSync(dirPath);
-		if (!exists) fs.mkdirSync(dirPath, { recursive: true });
-		return dirPath;
+function selectBestURL(coub: Coub, key: keyof typeof coub.file_versions.html5, required?: boolean): string | undefined {
+	const fileVersions = coub.file_versions?.html5;
+	const hasVersions  = fileVersions && fileVersions[key] !== undefined && Object.keys(fileVersions[key]).length > 0;
+	const bestURL      = hasVersions ? Object.values(fileVersions[key]).sort((v1, v2) => v2.size - v1.size)[0].url : undefined;
+
+	if (bestURL === undefined && required) {
+		throw `There are no file_versions.html5.${key} for coub ${coub.permalink}`;
 	}
 
-	createMediaFilename(id: string, url: string): string {
-		const dirPath = this.createDir(this.mediaDirname, id);
-		const ext = url.split('.').pop();
-		return path.join(dirPath, `${id}.${ext}`);
-	}
+	return bestURL;
 }

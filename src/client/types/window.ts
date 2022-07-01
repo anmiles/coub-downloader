@@ -1,4 +1,4 @@
-import type { ModalPopup } from './index.d';
+import type { ModalPopup } from './modalPopup';
 
 declare global {
 	interface Window {
@@ -6,5 +6,3 @@ declare global {
 		jQuery: typeof jQuery;
 	}
 }
-
-export {};

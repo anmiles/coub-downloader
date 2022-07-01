@@ -1,22 +1,26 @@
+import type { Coub } from '../types';
+
 export { createTestCoub };
-import type { Coub } from '../types/coub';
+export default { createTestCoub };
 
 function createTestCoub(id: string, override?: Partial<Coub>): Coub {
+	/* eslint-disable camelcase */
 	return {
-		permalink: id,
-		title: `Title: ${id}`,
-		file_versions: {
-			html5: {
-				video: {},
-				audio: {}
-			}
+		title         : `Title: ${id}`,
+		permalink     : id,
+		picture       : `${id}.jpg`,
+		likes_count   : 1,
+		views_count   : 1,
+		file_versions : {
+			html5 : {
+				video : {},
+				audio : {},
+			},
 		},
-		media_blocks: {
-			external_raw_videos: [],
+		media_blocks : {
+			external_raw_videos : [],
 		},
-		picture: `${id}.jpg`,
-		likes_count: 1,
-		views_count: 1,
-		...override
+		...override,
 	};
+	/* eslint-enable camelcase */
 }

@@ -48,15 +48,10 @@ beforeEach(() => {
 	getJSONSpy.mockImplementation(generateJSON);
 });
 
+const sleepMilliseconds = 300;
+
 describe('src/client/index', () => {
-
 	describe('sleep', () => {
-		const sleepMilliseconds = 300;
-
-		afterEach(() => {
-			jest.clearAllMocks();
-		});
-
 		it('should call setTimeout', async () => {
 			const setTimeoutSpy = jest.spyOn(global, 'setTimeout');
 			await client.sleep(sleepMilliseconds);
@@ -81,14 +76,6 @@ describe('src/client/index', () => {
 			sleepSpy = jest.spyOn(client, 'sleep');
 			modalPopup = client.showPopup();
 			setContentSpy = jest.spyOn(modalPopup, 'setContent');
-		});
-		
-		afterEach(() => {
-			jest.resetAllMocks();
-		});
-		
-		afterAll(() => {
-			jest.restoreAllMocks();
 		});
 
 		it('should download json', async () => {
@@ -134,25 +121,17 @@ describe('src/client/index', () => {
 
 		let clickSpy: jest.SpyInstance;
 		let downloadLink: HTMLAnchorElement;
-		
+
 		beforeAll(() => {
 			clickSpy = jest.spyOn(HTMLAnchorElement.prototype, 'click');
 		});
-		
+
 		beforeEach(() => {
 			downloadLink = document.createElement('a');
 
 			clickSpy.mockImplementation(function(){
 				downloadLink = this;
 			});
-		});
-		
-		afterEach(() => {
-			jest.resetAllMocks();
-		});
-		
-		afterAll(() => {
-			jest.restoreAllMocks();
 		});
 
 		it('should create and click download link', () => {
@@ -165,37 +144,29 @@ describe('src/client/index', () => {
 		let downloadCoubsSpy: jest.SpyInstance;
 		let downloadFileSpy: jest.SpyInstance;
 		let closePopupSpy: jest.SpyInstance;	
-		
+
 		beforeAll(() => {
 			downloadCoubsSpy = jest.spyOn(client, 'downloadCoubs');
 			downloadFileSpy = jest.spyOn(client, 'downloadFile');
 			closePopupSpy = jest.spyOn(modalPopup.popup, 'close');
 		});
-		
+
 		beforeEach(() => {
 			downloadCoubsSpy.mockImplementation((coubs) => [...coubs, generateCoub(), generateCoub()]);
 		});
-		
-		afterEach(() => {
-			jest.resetAllMocks();
-		});
-		
-		afterAll(() => {
-			jest.restoreAllMocks();
-		});
-		
+
 		it('should download likes and favourites', async () => {
 			await client.execute();
 
 			expect(downloadCoubsSpy.mock.calls).toMatchSnapshot();
 		});
-		
+
 		it('should download JSON file', async () => {
 			await client.execute();
 
 			expect(downloadFileSpy.mock.calls).toMatchSnapshot();
 		});
-		
+
 		it('should close popup', async () => {
 			await client.execute();
 

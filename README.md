@@ -2,37 +2,49 @@
 
 Downloads your favourite and liked coubs into local html file
 
-## IMPORTANT
+----
 
-**Due to recent incidents with some popular npm packages compromised, please do any actions below only using isolated (sandbox) environment.**
+## IMPORTANT! Migration to v2
 
-## WARNING
+*You can skip this section if you clone the repository first time.*
 
-- This software is being provided "as-is".
-- Author was fully tested it locally, but doesn't guarantee it to be working samely on your computer.
-- Make sure that you understand what you do.
-- Never execute external code in your developer console or launch unknown HTML files on your computer.
+**Getting compatible with multi-profile support**
+1. Come up with a profile name that will be used for your named profile
+1. Run `npm run migrate profile` (where `profile` is profile name your chosen).
+	- This will rename all profile files into appropriate ones.
+	- The command will throw an error if destination files already exist.
+	- The command will do nothing if you still didn't have any data
+1. You can add more profiles, see [Adding profiles](#adding-profiles) below.
+
+----
 
 ## Installation
 
 1. Install dependencies
-`npm run install`
-2. Build browser script
-`npm run build:client`
-3. Build server script
-`npm run build:server`
-4. Test everything
-`npm run test`
+`npm install`
+1. Build
+`npm run build`
+1. Test everything
+`npm test`
+
+<a name="adding-profiles"></a>
+## Adding profiles
+
+This application may work with multiple profiles (download videos liked from multiple coub accounts).
+
+1. Come up with any profile name you want
+1. Execute `npm run create profile`, where `profile` is profile name your came up with
+You can create as many profiles as you want.
 
 ## Downloading
 
 1. Download all coubs metadata
-	- copy script from `./dist/client/index.html` into clipboard
-	- open `https://coub.com` in the browser and log in
-	- open developer console
-	- paste script and execute
+	- Copy script from `./dist/client/index.html` into clipboard
+	- Open `https://coub.com` in the browser and log in
+	- Open developer console
+	- Paste script and execute
 		- note to remove `export ` at the very top of the script
-	- look at the downloading progress
+	- Look at the downloading progress
 	- JSON file will be asked to download, save it as `input/coubs.json`
 2. Download all coubs media files
 	- `npm start ./input/coubs.json output`

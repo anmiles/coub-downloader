@@ -1,15 +1,24 @@
 module.exports = {
-	preset: 'ts-jest',
-	testEnvironment: 'node',
-	testMatch: ['<rootDir>/src/**/__tests__/*.test.[jt]s'],
-	coverageDirectory: '.coverage/',
-	collectCoverageFrom: [
-		'<rootDir>/src/**/*.[jt]s$',
-	],
-	coveragePathIgnorePatterns: [
-		'\\/__tests__\\/',
-		'\\.d\\.ts$',
-		'\\.snap$',
-		'\\.json$',
+	preset     : 'ts-jest',
+	clearMocks : true,
+
+	roots     : [ '<rootDir>/src' ],
+	testMatch : [ '<rootDir>/src/**/__tests__/*.test.ts' ],
+	transform : {
+		'^.+\\.ts$' : 'ts-jest',
+	},
+	collectCoverageFrom : [
+		'<rootDir>/src/**/*.ts',
+		'!<rootDir>/src/**/*.d.ts',
+		'!<rootDir>/src/*.ts',
+		'!<rootDir>/src/types/*.ts',
+
+		'!**/node_modules/**',
+		'!**/__tests__/**',
+
+		'!<rootDir>/coverage/**',
+		'!<rootDir>/dist/**',
+		'!<rootDir>/input/**',
+		'!<rootDir>/output/**',
 	],
 };
