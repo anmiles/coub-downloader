@@ -3,7 +3,7 @@ import axios from 'axios';
 import type { Coub } from '../types';
 import { getJSON } from './jsonLib';
 import { log, info, error } from './logger';
-import { getMediaFile, getCoubsFile } from './paths';
+import { getMediaFile, getCoubsFile, ensureFile } from './paths';
 import { render } from './renderer';
 import { sleep } from './sleep';
 
@@ -74,6 +74,7 @@ async function downloadFile(url: string, filename: string): Promise<void> {
 		throw `Request to ${url} returned with status code: ${response.status}`;
 	}
 
+	ensureFile(filename);
 	fs.writeFileSync(filename, Buffer.from(response.data));
 }
 

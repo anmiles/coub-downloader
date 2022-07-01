@@ -42,6 +42,7 @@ jest.mock<Partial<typeof logger>>('../logger', () => ({
 jest.mock<Partial<typeof paths>>('../paths', () => ({
 	getCoubsFile : jest.fn().mockImplementation(() => coubsFile),
 	getMediaFile : jest.fn().mockImplementation(() => mediaFile),
+	ensureFile   : jest.fn(),
 }));
 
 jest.mock<Partial<typeof renderer>>('../renderer', () => ({
@@ -253,6 +254,12 @@ describe('src/server/lib/downloader', () => {
 			const func = () => original.downloadFile(url, filename);
 
 			await expect(func()).rejects.toEqual(`Request to ${url} returned with status code: 404`);
+		});
+
+		it('should ensure file path', async () => {
+			await original.downloadFile(url, filename);
+
+			expect(paths.ensureFile).toBeCalledWith(filename);
 		});
 
 		it('should write data to file if status code is 200', async () => {

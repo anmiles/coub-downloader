@@ -40,14 +40,14 @@ describe('src/server/lib/app', () => {
 		});
 
 		it('should get profiles', async () => {
-			existingProfiles = [];
-
 			await app.run();
 
 			expect(profiles.getProfiles).toBeCalled();
 		});
 
 		it('should output error if no profiles', async () => {
+			existingProfiles = [];
+
 			const func = () => app.run();
 
 			await expect(func).rejects.toEqual(mockError);
