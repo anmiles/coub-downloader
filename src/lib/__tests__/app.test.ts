@@ -10,9 +10,9 @@ jest.mock<Partial<typeof downloader>>('../downloader', () => ({
 
 jest.mock<Partial<typeof logger>>('../logger', () => ({
 	info  : jest.fn(),
-	error : jest.fn().mockImplementation(() => {
-		throw mockError;
-	}),
+	error : jest.fn().mockImplementation((error) => {
+		throw error;
+	}) as jest.Mock<never, any>,
 }));
 
 jest.mock<Partial<typeof profiles>>('../profiles', () => ({
@@ -22,8 +22,6 @@ jest.mock<Partial<typeof profiles>>('../profiles', () => ({
 
 const profile1 = 'username1';
 const profile2 = 'username2';
-
-const mockError = 'mockError';
 
 let existingProfiles: string[];
 
@@ -50,8 +48,7 @@ describe('src/lib/app', () => {
 
 			const func = () => app.run();
 
-			await expect(func).rejects.toEqual(mockError);
-			expect(logger.error).toBeCalledWith('Please `npm run create` at least one profile');
+			await expect(func).rejects.toEqual('Please `npm run create` at least one profile');
 		});
 
 		it('should output info', async () => {

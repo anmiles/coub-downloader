@@ -34,9 +34,9 @@ jest.mock<Partial<typeof jsonLib>>('../jsonLib', () => ({
 jest.mock<Partial<typeof logger>>('../logger', () => ({
 	log   : jest.fn(),
 	info  : jest.fn(),
-	error : jest.fn().mockImplementation(() => {
-		throw mockError;
-	}),
+	error : jest.fn().mockImplementation((error) => {
+		throw error;
+	}) as jest.Mock<never, any>,
 }));
 
 jest.mock<Partial<typeof paths>>('../paths', () => ({
@@ -69,7 +69,6 @@ let url: string;
 let fileExists: boolean;
 let axiosResponse: Partial<AxiosResponse>;
 
-const mockError  = 'mockError';
 const coubsError = `Coubs json ${coubsFile} doesn't exist. Refer to README.md in order to obtain it`;
 
 const getJSONSpy = jest.spyOn(jsonLib, 'getJSON').mockReturnValue(coubs);
@@ -101,8 +100,7 @@ describe('src/lib/downloader', () => {
 		it('should fallback to error', async () => {
 			await original.download(profile);
 
-			expect(getJSONSpy.mock.calls[0][1]).toThrowError(mockError);
-			expect(logger.error).toBeCalledWith(coubsError);
+			expect(getJSONSpy.mock.calls[0][1]).toThrowError(coubsError);
 		});
 
 		it('should download each coub', async () => {
