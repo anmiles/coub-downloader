@@ -1,5 +1,5 @@
 default:
-  image: node:12.22.1
+  image: node:18.14
 
 stages:
   - setup
@@ -20,6 +20,7 @@ install:
   script:
     - npm ci
   only:
+    - main
     - merge_requests
 
 build:
@@ -38,6 +39,7 @@ build:
     paths:
       - dist/
   only:
+    - main
     - merge_requests
 
 lint:
@@ -53,6 +55,7 @@ lint:
   script:
     - npm run lint
   only:
+    - main
     - merge_requests
 
 test:
@@ -72,6 +75,7 @@ test:
   script:
     - npm run test:ci
   only:
+    - main
     - merge_requests
 
 coverage:
@@ -91,4 +95,5 @@ coverage:
   script:
     - npm run test:report:coverage
   only:
+    - main
     - merge_requests

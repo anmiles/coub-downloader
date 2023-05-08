@@ -81,7 +81,7 @@ async function downloadFile(url: string, filename: string): Promise<void> {
 function selectBestURL(coub: Coub, key: keyof typeof coub.file_versions.html5, required?: boolean): string | undefined {
 	const fileVersions = coub.file_versions?.html5;
 	const hasVersions  = fileVersions && fileVersions[key] !== undefined && Object.keys(fileVersions[key]).length > 0;
-	const bestURL      = hasVersions ? Object.values(fileVersions[key]).sort((v1, v2) => v2.size - v1.size)[0].url : undefined;
+	const bestURL      = hasVersions ? Object.values(fileVersions[key]).sort((v1: CoubFile, v2: CoubFile) => v2.size - v1.size)[0].url : undefined;
 
 	if (bestURL === undefined && required) {
 		throw `There are no file_versions.html5.${key} for coub ${coub.permalink}`;

@@ -81,25 +81,7 @@ describe('src/lib/profiles', () => {
 		it('should write json to profiles file', () => {
 			original.setProfiles(allProfiles);
 
-			expect(jsonLib.writeJSON).toBeCalledWith(profilesFile, allProfiles);
-		});
-	});
-
-	describe('restrictOldFiles', () => {
-		it('should throw if any of old files exist', () => {
-			existingFiles = [ './input/coubs.json', './input/username1.json' ];
-
-			const func = () => original.restrictOldFiles();
-
-			expect(func).toThrowError('Existing file ./input/coubs.json is not compatible with new multi-profile support, please perform migration (see README.md)');
-		});
-
-		it('should not throw if old files not detected', () => {
-			existingFiles = [ './secrets/username1.json' ];
-
-			const func = () => original.restrictOldFiles();
-
-			expect(func).not.toThrow();
+			expect(writeJSONSpy).toHaveBeenCalledWith(profilesFile, allProfiles);
 		});
 	});
 

@@ -34,36 +34,3 @@ function create(profile: string): void {
 	existingProfiles.push(profile);
 	profiles.setProfiles(existingProfiles);
 }
-
-function migrate(profile: string): void {
-	if (!profile) {
-		error('Usage: `npm run migrate profile` where `profile` - is any profile name you want');
-	}
-
-	const renames: Array<{src: typeof oldFiles[number]; dst: string}> = [
-		{ src : './input/coubs.json', dst : `./input/${profile}.json` },
-	];
-
-	if (renames.filter((rename) => fs.existsSync(rename.src)).length === 0) {
-		error('There are no files to migrate');
-	}
-
-	profiles.create(profile);
-
-	for (const rename of renames) {
-		if (fs.existsSync(rename.src) && !fs.existsSync(rename.dst)) {
-			log(`Moving '${rename.src}' to '${rename.dst}'...`);
-			fs.renameSync(rename.src, rename.dst);
-		}
-	}
-
-	warn(`Please move './output/' to './output/${profile}/' manually`);
-}
-
-function restrictOldFiles(): void {
-	for (const file of oldFiles) {
-		if (fs.existsSync(file)) {
-			throw `Existing file ${file} is not compatible with new multi-profile support, please perform migration (see README.md)`;
-		}
-	}
-}
