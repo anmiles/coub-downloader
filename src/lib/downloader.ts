@@ -1,22 +1,24 @@
 import fs from 'fs';
-import axios from 'axios';
-import type { Coub } from '../types';
-import { getJSON } from './jsonLib';
-import { log, info, error } from './logger';
-import { getMediaFile, getCoubsFile, ensureFile } from './paths';
+import '@anmiles/prototypes';
+import { download } from '@anmiles/downloader';
+import { log, info } from '@anmiles/logger';
+import sleep from '@anmiles/sleep';
+import type { Coub, CoubFile } from '../types';
+import { getMediaFile, getCoubsFile } from './paths';
 import { render } from './renderer';
-import { sleep } from './sleep';
 
 import downloader from './downloader';
 
 const sleepMilliseconds = 500;
 
-export { download };
-export default { download, downloadCoub, downloadMedia, downloadFile, selectBestURL };
+export { downloadAll };
+export default { downloadAll, downloadCoub, downloadMedia, selectBestURL };
 
-async function download(profile: string): Promise<void> {
+async function downloadAll(profile: string): Promise<void> {
 	const coubsFile = getCoubsFile(profile);
-	const coubs     = getJSON<Coub[]>(coubsFile, () => error(`Coubs json ${coubsFile} doesn't exist. Refer to README.md in order to obtain it`) as never);
+	const coubs     = fs.getJSON<Coub[]>(coubsFile, () => {
+		throw `Coubs json ${coubsFile} doesn't exist. Refer to README.md in order to obtain it`;
+	});
 
 	for (const coub of coubs) {
 		await downloader.downloadCoub(profile, coub);
@@ -59,23 +61,8 @@ async function downloadMedia(profile: string, coubID: string, url: string | unde
 	if (!fs.existsSync(mediaFile)) {
 		info(`\tDownloading ${url}`);
 		await sleep(sleepMilliseconds);
-		await downloader.downloadFile(url, mediaFile);
+		await download(url, mediaFile);
 	}
-}
-
-async function downloadFile(url: string, filename: string): Promise<void> {
-	const response = await axios({
-		url,
-		method       : 'GET',
-		responseType : 'arraybuffer',
-	});
-
-	if (response.status !== 200) {
-		throw `Request to ${url} returned with status code: ${response.status}`;
-	}
-
-	ensureFile(filename);
-	fs.writeFileSync(filename, Buffer.from(response.data));
 }
 
 function selectBestURL(coub: Coub, key: keyof typeof coub.file_versions.html5, required?: boolean): string | undefined {

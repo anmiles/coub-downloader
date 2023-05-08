@@ -1,10 +1,10 @@
-import fs from 'fs';
 import path from 'path';
-
+import fs from 'fs';
 import paths from './paths';
+import '@anmiles/prototypes';
 
-export { getOutputDir, getMediaDir, getTemplateDir, getCoubsFile, getProfilesFile, getIndexFile, getMediaFile, ensureDir, ensureFile };
-export default { getOutputDir, getMediaDir, getTemplateDir, getCoubsFile, getProfilesFile, getIndexFile, getMediaFile, ensureDir, ensureFile };
+export { getOutputDir, getMediaDir, getTemplateDir, getCoubsFile, getProfilesFile, getIndexFile, getMediaFile };
+export default { getOutputDir, getMediaDir, getTemplateDir, getCoubsFile, getProfilesFile, getIndexFile, getMediaFile };
 
 const dirPaths = {
 	input     : 'input',
@@ -13,11 +13,11 @@ const dirPaths = {
 };
 
 function getOutputDir(profile: string): string {
-	return paths.ensureDir(path.join(dirPaths.output, profile));
+	return fs.ensureDir(path.join(dirPaths.output, profile));
 }
 
 function getMediaDir(profile: string): string {
-	return paths.ensureDir(path.join(dirPaths.output, profile, 'media'));
+	return fs.ensureDir(path.join(dirPaths.output, profile, 'media'));
 }
 
 function getTemplateDir(): string {
@@ -29,30 +29,14 @@ function getProfilesFile(): string {
 }
 
 function getCoubsFile(profile: string): string {
-	return paths.ensureFile(path.join(dirPaths.input, `${profile}.json`));
+	return fs.ensureFile(path.join(dirPaths.input, `${profile}.json`));
 }
 
 function getIndexFile(profile: string): string {
-	return paths.ensureFile(path.join(dirPaths.output, profile, 'index.html'));
+	return fs.ensureFile(path.join(dirPaths.output, profile, 'index.html'));
 }
 
 function getMediaFile(profile: string, coubID: string, mediaURL: string): string {
 	const ext = mediaURL.split('.').pop();
 	return path.join(paths.getMediaDir(profile), coubID, `${coubID}.${ext}`);
-}
-
-function ensureDir(dirPath: string) {
-	if (!fs.existsSync(dirPath)) {
-		fs.mkdirSync(dirPath, { recursive : true });
-	}
-	return dirPath;
-}
-
-function ensureFile(filePath: string) {
-	paths.ensureDir(path.dirname(filePath));
-
-	if (!fs.existsSync(filePath)) {
-		fs.writeFileSync(filePath, '');
-	}
-	return filePath;
 }

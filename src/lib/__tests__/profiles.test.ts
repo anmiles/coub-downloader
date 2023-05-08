@@ -1,36 +1,12 @@
 import fs from 'fs';
-import jsonLib from '../jsonLib';
-import logger from '../logger';
 import paths from '../paths';
 
 import profiles from '../profiles';
 const original = jest.requireActual('../profiles').default as typeof profiles;
 jest.mock<typeof profiles>('../profiles', () => ({
-	getProfiles      : jest.fn().mockImplementation(() => existingProfiles),
-	setProfiles      : jest.fn(),
-	restrictOldFiles : jest.fn(),
-	create           : jest.fn(),
-	migrate          : jest.fn(),
-}));
-
-jest.mock<Partial<typeof fs>>('fs', () => ({
-	mkdirSync     : jest.fn(),
-	renameSync    : jest.fn(),
-	writeFileSync : jest.fn(),
-	existsSync    : jest.fn().mockImplementation((file) => existingFiles.includes(file)),
-}));
-
-jest.mock<Partial<typeof jsonLib>>('../jsonLib', () => ({
-	getJSON   : jest.fn().mockImplementation(() => json),
-	writeJSON : jest.fn(),
-}));
-
-jest.mock<Partial<typeof logger>>('../logger', () => ({
-	log   : jest.fn(),
-	warn  : jest.fn(),
-	error : jest.fn().mockImplementation((error) => {
-		throw error;
-	}) as jest.Mock<never, any>,
+	getProfiles : jest.fn().mockImplementation(() => existingProfiles),
+	setProfiles : jest.fn(),
+	create      : jest.fn(),
 }));
 
 jest.mock<Partial<typeof paths>>('../paths', () => ({
@@ -44,17 +20,27 @@ const profile1         = 'username1';
 const profile2         = 'username2';
 const allProfiles      = [ profile1, profile2 ];
 
-let existingFiles: string[] = [];
+let getJSONSpy: jest.SpyInstance;
+let writeJSONSpy: jest.SpyInstance;
+
+beforeAll(() => {
+	getJSONSpy   = jest.spyOn(fs, 'getJSON');
+	writeJSONSpy = jest.spyOn(fs, 'writeJSON');
+});
 
 beforeEach(() => {
-	existingFiles = [];
+	getJSONSpy.mockImplementation(() => json);
+	writeJSONSpy.mockImplementation();
+});
+
+afterAll(() => {
+	getJSONSpy.mockRestore();
+	writeJSONSpy.mockRestore();
 });
 
 describe('src/lib/profiles', () => {
 
 	describe('getProfiles', () => {
-		const getJSONSpy = jest.spyOn(jsonLib, 'getJSON');
-
 		it('should get json from profiles file', () => {
 			original.getProfiles();
 

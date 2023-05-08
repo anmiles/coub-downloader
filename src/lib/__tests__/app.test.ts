@@ -1,23 +1,19 @@
+import logger from '@anmiles/logger';
 import downloader from '../downloader';
-import logger from '../logger';
 import profiles from '../profiles';
 
 import app from '../app';
 
 jest.mock<Partial<typeof downloader>>('../downloader', () => ({
-	download : jest.fn(),
+	downloadAll : jest.fn(),
 }));
 
-jest.mock<Partial<typeof logger>>('../logger', () => ({
-	info  : jest.fn(),
-	error : jest.fn().mockImplementation((error) => {
-		throw error;
-	}) as jest.Mock<never, any>,
+jest.mock<Partial<typeof logger>>('@anmiles/logger', () => ({
+	info : jest.fn(),
 }));
 
 jest.mock<Partial<typeof profiles>>('../profiles', () => ({
-	getProfiles      : jest.fn().mockImplementation(() => existingProfiles),
-	restrictOldFiles : jest.fn(),
+	getProfiles : jest.fn().mockImplementation(() => existingProfiles),
 }));
 
 const profile1 = 'username1';
@@ -31,12 +27,6 @@ beforeEach(() => {
 
 describe('src/lib/app', () => {
 	describe('run', () => {
-		it('should restrict old files', async () => {
-			await app.run();
-
-			expect(profiles.restrictOldFiles).toBeCalled();
-		});
-
 		it('should get profiles', async () => {
 			await app.run();
 
@@ -59,11 +49,18 @@ describe('src/lib/app', () => {
 			expect(logger.info).toHaveBeenCalledWith('Done!');
 		});
 
-		it('should download coubs for each profile', async () => {
+		it('should download coubs for all profiles', async () => {
 			await app.run();
 
-			expect(downloader.download).toBeCalledWith(profile1);
-			expect(downloader.download).toBeCalledWith(profile2);
+			expect(downloader.downloadAll).toHaveBeenCalledWith(profile1);
+			expect(downloader.downloadAll).toHaveBeenCalledWith(profile2);
+		});
+
+		it('should download coubs only for specified profile', async () => {
+			await app.run(profile1);
+
+			expect(downloader.downloadAll).toHaveBeenCalledWith(profile1);
+			expect(downloader.downloadAll).not.toHaveBeenCalledWith(profile2);
 		});
 	});
 });

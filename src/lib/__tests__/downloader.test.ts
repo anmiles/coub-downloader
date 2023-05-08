@@ -1,42 +1,34 @@
 /* eslint-disable camelcase */
 import fs from 'fs';
-import axios from 'axios';
-import type { AxiosResponse } from 'axios';
-import jsonLib from '../jsonLib';
-import logger from '../logger';
+import '@anmiles/prototypes';
+import logger from '@anmiles/logger';
+import sleep from '@anmiles/sleep';
+import download from '@anmiles/downloader';
 import paths from '../paths';
 import renderer from '../renderer';
-import sleep from '../sleep';
 import { createTestCoub } from '../testUtils';
 import type { Coub } from '../../types';
 
 import downloader from '../downloader';
 const original = jest.requireActual('../downloader').default as typeof downloader;
 jest.mock<typeof downloader>('../downloader', () => ({
-	download      : jest.fn().mockImplementation(() => {}),
+	downloadAll   : jest.fn().mockImplementation(() => {}),
 	downloadCoub  : jest.fn().mockImplementation(() => {}),
 	downloadMedia : jest.fn().mockImplementation(() => {}),
-	downloadFile  : jest.fn().mockImplementation(() => {}),
 	selectBestURL : jest.fn().mockImplementation((coub, key, required) => required || fileExists ? `${key}.url` : undefined),
 }));
 
-jest.mock('axios', () => jest.fn().mockImplementation(() => axiosResponse));
+jest.mock<Partial<typeof download>>('@anmiles/downloader', () => ({
+	download : jest.fn().mockImplementation(),
+}));
 
 jest.mock<Partial<typeof fs>>('fs', () => ({
-	writeFileSync : jest.fn(),
-	existsSync    : jest.fn().mockImplementation(() => fileExists),
+	existsSync : jest.fn().mockImplementation(() => fileExists),
 }));
 
-jest.mock<Partial<typeof jsonLib>>('../jsonLib', () => ({
-	getJSON : jest.fn().mockImplementation(() => coubs),
-}));
-
-jest.mock<Partial<typeof logger>>('../logger', () => ({
-	log   : jest.fn(),
-	info  : jest.fn(),
-	error : jest.fn().mockImplementation((error) => {
-		throw error;
-	}) as jest.Mock<never, any>,
+jest.mock<Partial<typeof logger>>('@anmiles/logger', () => ({
+	log  : jest.fn(),
+	info : jest.fn(),
 }));
 
 jest.mock<Partial<typeof paths>>('../paths', () => ({
@@ -49,9 +41,7 @@ jest.mock<Partial<typeof renderer>>('../renderer', () => ({
 	render : jest.fn(),
 }));
 
-jest.mock<Partial<typeof sleep>>('../sleep', () => ({
-	sleep : jest.fn(),
-}));
+jest.mock<typeof sleep>('@anmiles/sleep', () => jest.fn());
 
 const profile           = 'username';
 const coubsFile         = 'coubsFile';
@@ -62,49 +52,58 @@ const coub1             = createTestCoub(id1);
 const coub2             = createTestCoub(id2);
 const coubs             = [ coub1, coub2 ];
 const sleepMilliseconds = 500;
-const filename          = 'filename';
-const fileData          = Buffer.from('fileData');
 
 let url: string;
 let fileExists: boolean;
-let axiosResponse: Partial<AxiosResponse>;
 
 const coubsError = `Coubs json ${coubsFile} doesn't exist. Refer to README.md in order to obtain it`;
 
-const getJSONSpy = jest.spyOn(jsonLib, 'getJSON').mockReturnValue(coubs);
+let getJSONSpy: jest.SpyInstance;
+let writeJSONSpy: jest.SpyInstance;
+
+beforeAll(() => {
+	getJSONSpy   = jest.spyOn(fs, 'getJSON');
+	writeJSONSpy = jest.spyOn(fs, 'writeJSON');
+});
 
 beforeEach(() => {
-	url           = 'https://coub-anubis-a.akamaized.net/filename.url';
-	fileExists    = true;
-	axiosResponse = {
-		data   : fileData,
-		status : 200,
-	};
+	getJSONSpy.mockImplementation(() => coubs);
+	writeJSONSpy.mockImplementation();
+	url        = 'https://coub-anubis-a.akamaized.net/filename.url';
+	fileExists = true;
+});
+
+afterAll(() => {
+	getJSONSpy.mockRestore();
+	writeJSONSpy.mockRestore();
+});
+
+beforeEach(() => {
 });
 
 describe('src/lib/downloader', () => {
-	describe('download', () => {
+	describe('downloadAll', () => {
 		it('should get coubs file', async () => {
-			await original.download(profile);
+			await original.downloadAll(profile);
 
 			expect(paths.getCoubsFile).toHaveBeenCalledWith(profile);
 		});
 
 		it('should get json from coubs file', async () => {
-			await original.download(profile);
+			await original.downloadAll(profile);
 
-			expect(getJSONSpy).toBeCalled();
+			expect(getJSONSpy).toHaveBeenCalled();
 			expect(getJSONSpy.mock.calls[0][0]).toEqual(coubsFile);
 		});
 
 		it('should fallback to error', async () => {
-			await original.download(profile);
+			await original.downloadAll(profile);
 
-			expect(getJSONSpy.mock.calls[0][1]).toThrowError(coubsError);
+			expect(getJSONSpy.mock.calls[0][1]).toThrow(coubsError);
 		});
 
 		it('should download each coub', async () => {
-			await original.download(profile);
+			await original.downloadAll(profile);
 
 			coubs.forEach((coub) => {
 				expect(downloader.downloadCoub).toHaveBeenCalledWith(profile, coub);
@@ -112,9 +111,9 @@ describe('src/lib/downloader', () => {
 		});
 
 		it('should render coubs', async () => {
-			await original.download(profile);
+			await original.downloadAll(profile);
 
-			expect(renderer.render).toBeCalledWith(profile, coubs);
+			expect(renderer.render).toHaveBeenCalledWith(profile, coubs);
 		});
 	});
 
@@ -202,19 +201,19 @@ describe('src/lib/downloader', () => {
 			it('should download file if not exists', async () => {
 				await original.downloadMedia(profile, id1, url);
 
-				expect(downloader.downloadFile).toBeCalledWith(url, mediaFile);
+				expect(download.download).toHaveBeenCalledWith(url, mediaFile);
 			});
 
 			it('should log a message for downloaded file', async () => {
 				await original.downloadMedia(profile, id1, url);
 
-				expect(logger.info).toBeCalledWith(`\tDownloading ${url}`);
+				expect(logger.info).toHaveBeenCalledWith(`\tDownloading ${url}`);
 			});
 
 			it('should throttle downloads', async () => {
 				await original.downloadMedia(profile, id1, url);
 
-				expect(sleep.sleep).toBeCalledWith(sleepMilliseconds);
+				expect(sleep).toHaveBeenCalledWith(sleepMilliseconds);
 			});
 		});
 
@@ -222,7 +221,7 @@ describe('src/lib/downloader', () => {
 			it('should not download existing', async () => {
 				await original.downloadMedia(profile, id1, url);
 
-				expect(downloader.downloadFile).not.toBeCalled();
+				expect(download.download).not.toHaveBeenCalled();
 			});
 
 			it('should not log a message', async () => {
@@ -234,36 +233,8 @@ describe('src/lib/downloader', () => {
 			it('should not sleep', async () => {
 				await original.downloadMedia(profile, id1, url);
 
-				expect(sleep.sleep).not.toBeCalled();
+				expect(sleep).not.toHaveBeenCalled();
 			});
-		});
-	});
-
-	describe('downloadFile', () => {
-		it('should get arraybuffer from axios', async () => {
-			await original.downloadFile(url, filename);
-
-			expect(axios).toBeCalledWith({ url, method : 'GET', responseType : 'arraybuffer' });
-		});
-
-		it('should throw error if status code is not 200', async () => {
-			axiosResponse.status = 404;
-
-			const func = () => original.downloadFile(url, filename);
-
-			await expect(func()).rejects.toEqual(`Request to ${url} returned with status code: 404`);
-		});
-
-		it('should ensure file path', async () => {
-			await original.downloadFile(url, filename);
-
-			expect(paths.ensureFile).toBeCalledWith(filename);
-		});
-
-		it('should write data to file if status code is 200', async () => {
-			await original.downloadFile(url, filename);
-
-			expect(fs.writeFileSync).toBeCalledWith(filename, fileData);
 		});
 	});
 

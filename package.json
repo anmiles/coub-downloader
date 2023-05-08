@@ -29,8 +29,10 @@
     "create": "node ./dist/create.js"
   },
   "dependencies": {
-    "axios": "^0.27.2",
-    "colorette": "^2.0.19",
+    "@anmiles/downloader": "^2.0.5",
+    "@anmiles/logger": "^2.1.3",
+    "@anmiles/prototypes": "^2.0.2",
+    "@anmiles/sleep": "^1.0.3",
     "lodash": "^4.17.21"
   },
   "devDependencies": {

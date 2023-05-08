@@ -1,28 +1,25 @@
 import fs from 'fs';
-import { getJSON, writeJSON } from './jsonLib';
-import { log, warn, error } from './logger';
+import '@anmiles/prototypes';
 import { getProfilesFile } from './paths';
 
 import profiles from './profiles';
 
-export { getProfiles, setProfiles, create, migrate, restrictOldFiles };
-export default { getProfiles, setProfiles, create, migrate, restrictOldFiles };
-
-const oldFiles = [ './input/coubs.json' ];
+export { getProfiles, setProfiles, create };
+export default { getProfiles, setProfiles, create };
 
 function getProfiles(): string[] {
 	const profilesFile = getProfilesFile();
-	return getJSON(profilesFile, () => []);
+	return fs.getJSON(profilesFile, () => []);
 }
 
 function setProfiles(profiles: string[]): void {
 	const profilesFile = getProfilesFile();
-	writeJSON(profilesFile, profiles);
+	fs.writeJSON(profilesFile, profiles);
 }
 
 function create(profile: string): void {
 	if (!profile) {
-		error('Usage: `npm run create profile` where `profile` - is any profile name you want');
+		throw 'Usage: `npm run create profile` where `profile` - is any profile name you want';
 	}
 
 	const existingProfiles = profiles.getProfiles();

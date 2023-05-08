@@ -1,3 +1,8 @@
+import { error } from '@anmiles/logger';
 import { run } from './lib/app';
 
-run();
+run().catch((ex) => {
+	error(ex);
+	process.exit(1);
+});
+

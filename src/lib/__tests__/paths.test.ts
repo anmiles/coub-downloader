@@ -11,25 +11,16 @@ jest.mock<typeof paths>('../paths', () => ({
 	getProfilesFile : jest.fn().mockImplementation(() => profilesFile),
 	getIndexFile    : jest.fn().mockImplementation(() => indexFile),
 	getMediaFile    : jest.fn().mockImplementation(() => mediaFile),
-	ensureDir       : jest.fn().mockImplementation((dirPath) => dirPath),
-	ensureFile      : jest.fn().mockImplementation((filePath) => filePath),
-	dirname         : jest.fn().mockImplementation((arg) => arg.split('/').slice(0, -1).join('/')),
-}));
-
-jest.mock<Partial<typeof fs>>('fs', () => ({
-	mkdirSync     : jest.fn(),
-	writeFileSync : jest.fn(),
-	existsSync    : jest.fn().mockImplementation(() => exists),
 }));
 
 jest.mock<Partial<typeof path>>('path', () => ({
-	join    : jest.fn().mockImplementation((...args) => args.join('/')),
-	dirname : jest.fn().mockImplementation((arg) => arg.split('/').slice(0, -1).join('/')),
+	join : jest.fn().mockImplementation((...args) => args.join('/')),
 }));
 
+const ensureDirSpy  = jest.spyOn(fs, 'ensureDir').mockImplementation((dirPath) => dirPath);
+const ensureFileSpy = jest.spyOn(fs, 'ensureFile').mockImplementation((filePath) => filePath);
+
 const profile  = 'username';
-const dirPath  = 'dirPath';
-const filePath = 'parentDir/filePath';
 const coubID   = 'coub1';
 const mediaURL = 'test.url';
 
@@ -41,14 +32,12 @@ const profilesFile = 'input/profiles.json';
 const indexFile    = 'output/username/index.html';
 const mediaFile    = 'output/username/media/coub1/coub1.url';
 
-let exists: boolean;
-
 describe('src/lib/paths', () => {
 	describe('getOutputDir', () => {
 		it('should call ensureDir', () => {
 			original.getOutputDir(profile);
 
-			expect(paths.ensureDir).toBeCalledWith(outputDir);
+			expect(ensureDirSpy).toHaveBeenCalledWith(outputDir);
 		});
 
 		it('should return outputDir', () => {
@@ -62,7 +51,7 @@ describe('src/lib/paths', () => {
 		it('should call ensureDir', () => {
 			original.getMediaDir(profile);
 
-			expect(paths.ensureDir).toBeCalledWith(mediaDir);
+			expect(ensureDirSpy).toHaveBeenCalledWith(mediaDir);
 		});
 
 		it('should return mediaDir', () => {
@@ -84,7 +73,7 @@ describe('src/lib/paths', () => {
 		it('should call ensureFile', () => {
 			original.getCoubsFile(profile);
 
-			expect(paths.ensureFile).toBeCalledWith(coubsFile);
+			expect(ensureFileSpy).toHaveBeenCalledWith(coubsFile);
 		});
 
 		it('should return coubsFile', () => {
@@ -106,7 +95,7 @@ describe('src/lib/paths', () => {
 		it('should call ensureFile', () => {
 			original.getIndexFile(profile);
 
-			expect(paths.ensureFile).toBeCalledWith(indexFile);
+			expect(ensureFileSpy).toHaveBeenCalledWith(indexFile);
 		});
 
 		it('should return likesFile', () => {
@@ -120,69 +109,13 @@ describe('src/lib/paths', () => {
 		it('should call getMediaDir', () => {
 			original.getMediaFile(profile, coubID, mediaURL);
 
-			expect(paths.getMediaDir).toBeCalledWith(profile);
+			expect(paths.getMediaDir).toHaveBeenCalledWith(profile);
 		});
 
 		it('should return mediaFile', () => {
 			const result = original.getMediaFile(profile, coubID, mediaURL);
 
 			expect(result).toEqual(mediaFile);
-		});
-	});
-
-	describe('ensureDir', () => {
-		it('should create empty dir if not exists', () => {
-			exists = false;
-
-			original.ensureDir(dirPath);
-
-			expect(fs.mkdirSync).toBeCalledWith(dirPath, { recursive : true });
-		});
-
-		it('should not create empty dir if already exists', () => {
-			exists = true;
-
-			original.ensureDir(dirPath);
-
-			expect(fs.writeFileSync).not.toBeCalled();
-		});
-
-		it('should return dirPath', () => {
-			const result = original.ensureDir(dirPath);
-
-			expect(result).toEqual(dirPath);
-		});
-	});
-
-	describe('ensureFile', () => {
-		it('should ensure parent dir', () => {
-			exists = false;
-
-			original.ensureFile(filePath);
-
-			expect(paths.ensureDir).toBeCalledWith('parentDir');
-		});
-
-		it('should create empty file if not exists', () => {
-			exists = false;
-
-			original.ensureFile(filePath);
-
-			expect(fs.writeFileSync).toBeCalledWith(filePath, '');
-		});
-
-		it('should not create empty file if already exists', () => {
-			exists = true;
-
-			original.ensureFile(filePath);
-
-			expect(fs.writeFileSync).not.toBeCalled();
-		});
-
-		it('should return filePath', () => {
-			const result = original.ensureFile(filePath);
-
-			expect(result).toEqual(filePath);
 		});
 	});
 });
