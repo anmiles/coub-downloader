@@ -87,7 +87,7 @@ describe('src/lib/downloader', () => {
 		it('should get coubs file', async () => {
 			await original.download(profile);
 
-			expect(paths.getCoubsFile).toBeCalledWith(profile);
+			expect(paths.getCoubsFile).toHaveBeenCalledWith(profile);
 		});
 
 		it('should get json from coubs file', async () => {
@@ -107,7 +107,7 @@ describe('src/lib/downloader', () => {
 			await original.download(profile);
 
 			coubs.forEach((coub) => {
-				expect(downloader.downloadCoub).toBeCalledWith(profile, coub);
+				expect(downloader.downloadCoub).toHaveBeenCalledWith(profile, coub);
 			});
 		});
 
@@ -122,31 +122,31 @@ describe('src/lib/downloader', () => {
 		it('should log a message', async () => {
 			await original.downloadCoub(profile, coub1);
 
-			expect(logger.log).toBeCalledWith('Processing testID1');
+			expect(logger.log).toHaveBeenCalledWith('Processing testID1');
 		});
 
 		it('should select best video', async () => {
 			await original.downloadCoub(profile, coub1);
 
-			expect(downloader.selectBestURL).toBeCalledWith(coub1, 'video', true);
+			expect(downloader.selectBestURL).toHaveBeenCalledWith(coub1, 'video', true);
 		});
 
 		it('should optionally select best audio', async () => {
 			await original.downloadCoub(profile, coub1);
 
-			expect(downloader.selectBestURL).toBeCalledWith(coub1, 'audio');
+			expect(downloader.selectBestURL).toHaveBeenCalledWith(coub1, 'audio');
 		});
 
 		it('should download best video', async () => {
 			await original.downloadCoub(profile, coub1);
 
-			expect(downloader.downloadMedia).toBeCalledWith(profile, id1, 'video.url');
+			expect(downloader.downloadMedia).toHaveBeenCalledWith(profile, id1, 'video.url');
 		});
 
 		it('should download best audio if any', async () => {
 			await original.downloadCoub(profile, coub1);
 
-			expect(downloader.downloadMedia).toBeCalledWith(profile, id1, 'audio.url');
+			expect(downloader.downloadMedia).toHaveBeenCalledWith(profile, id1, 'audio.url');
 		});
 
 		it('should not download audio if no any', async () => {
@@ -154,13 +154,13 @@ describe('src/lib/downloader', () => {
 
 			await original.downloadCoub(profile, coub1);
 
-			expect(downloader.downloadMedia).not.toBeCalledWith(profile, id1, 'audio.url');
+			expect(downloader.downloadMedia).not.toHaveBeenCalledWith(profile, id1, 'audio.url');
 		});
 
 		it('should download preview image', async () => {
 			await original.downloadCoub(profile, coub1);
 
-			expect(downloader.downloadMedia).toBeCalledWith(profile, id1, 'testID1.jpg');
+			expect(downloader.downloadMedia).toHaveBeenCalledWith(profile, id1, 'testID1.jpg');
 		});
 
 		it('should return coub', async () => {
@@ -191,7 +191,7 @@ describe('src/lib/downloader', () => {
 		it('should get media file', async () => {
 			await original.downloadMedia(profile, id1, url);
 
-			expect(paths.getMediaFile).toBeCalledWith(profile, id1, url);
+			expect(paths.getMediaFile).toHaveBeenCalledWith(profile, id1, url);
 		});
 
 		describe('media file does not exist', () => {
@@ -228,7 +228,7 @@ describe('src/lib/downloader', () => {
 			it('should not log a message', async () => {
 				await original.downloadMedia(profile, id1, url);
 
-				expect(logger.log).not.toBeCalledWith(`\tDownloading ${url}`);
+				expect(logger.log).not.toHaveBeenCalledWith(`\tDownloading ${url}`);
 			});
 
 			it('should not sleep', async () => {
@@ -318,7 +318,7 @@ describe('src/lib/downloader', () => {
 
 			const callback = () => original.selectBestURL(coub, 'audio', true);
 
-			expect(callback).toThrowError(`There are no file_versions.html5.audio for coub ${id1}`);
+			expect(callback).toThrow(`There are no file_versions.html5.audio for coub ${id1}`);
 		});
 	});
 });

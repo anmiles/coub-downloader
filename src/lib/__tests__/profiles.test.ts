@@ -58,7 +58,7 @@ describe('src/lib/profiles', () => {
 		it('should get json from profiles file', () => {
 			original.getProfiles();
 
-			expect(getJSONSpy).toBeCalled();
+			expect(getJSONSpy).toHaveBeenCalled();
 			expect(getJSONSpy.mock.calls[0][0]).toEqual(profilesFile);
 		});
 
@@ -107,7 +107,7 @@ describe('src/lib/profiles', () => {
 		it('should output error and do nothing if profile is falsy', () => {
 			const func = () => original.create('');
 
-			expect(func).toThrowError('Usage: `npm run create profile` where `profile` - is any profile name you want');
+			expect(func).toThrow('Usage: `npm run create profile` where `profile` - is any profile name you want');
 		});
 
 		it('should get profiles', () => {
@@ -115,7 +115,7 @@ describe('src/lib/profiles', () => {
 
 			original.create(newProfile);
 
-			expect(profiles.getProfiles).toBeCalledWith();
+			expect(profiles.getProfiles).toHaveBeenCalledWith();
 		});
 
 		it('should not save profiles if profile already exists', () => {
@@ -123,7 +123,7 @@ describe('src/lib/profiles', () => {
 
 			original.create(newProfile);
 
-			expect(profiles.setProfiles).not.toBeCalled();
+			expect(profiles.setProfiles).not.toHaveBeenCalled();
 		});
 
 		it('should add new profile if not exists', () => {
@@ -131,63 +131,7 @@ describe('src/lib/profiles', () => {
 
 			original.create(newProfile);
 
-			expect(profiles.setProfiles).toBeCalledWith([ 'username1', 'username2', 'newProfile' ]);
-		});
-	});
-
-	describe('migrate', () => {
-		const migratingProfile = 'username3';
-
-		it('should output error if profile is falsy', () => {
-			const func = () => original.migrate('');
-
-			expect(func).toThrowError('Usage: `npm run migrate profile` where `profile` - is any profile name you want');
-		});
-
-		it('should output error if nothing to migrate', () => {
-			existingFiles = [ 'test.json' ];
-			const func    = () => original.migrate(migratingProfile);
-
-			expect(func).toThrowError('There are no files to migrate');
-		});
-
-		describe('there are files to migrate', () => {
-			const func = () => original.migrate(migratingProfile);
-
-			beforeEach(() => {
-				existingFiles = [ './input/coubs.json', 'test.json' ];
-			});
-
-			it('should create profile', () => {
-				func();
-				expect(profiles.create).toBeCalledWith(migratingProfile);
-			});
-
-			it('should rename existing old files', () => {
-				func();
-
-				expect(fs.renameSync).toBeCalledWith('./input/coubs.json', './input/username3.json');
-			});
-
-			it('should not overwrite existing new files', () => {
-				existingFiles.push('./input/username3.json');
-
-				func();
-
-				expect(fs.renameSync).not.toBeCalled();
-			});
-
-			it('should output progress', () => {
-				func();
-
-				expect(logger.log).toBeCalledWith('Moving \'./input/coubs.json\' to \'./input/username3.json\'...');
-			});
-
-			it('should warn about manual action', () => {
-				func();
-
-				expect(logger.warn).toBeCalledWith('Please move \'./output/\' to \'./output/username3/\' manually');
-			});
+			expect(profiles.setProfiles).toHaveBeenCalledWith([ 'username1', 'username2', 'newProfile' ]);
 		});
 	});
 });

@@ -89,7 +89,7 @@ describe('src/client/index', () => {
 
 			await client.downloadCoubs(coubs, type, modalPopup, interval);
 
-			expect(getJSONSpy).toBeCalledTimes(totalPages);
+			expect(getJSONSpy).toHaveBeenCalledTimes(totalPages);
 			expect(getJSONSpy.mock.calls).toMatchSnapshot();
 			expect(getJSONSpy.mock.results).toMatchSnapshot();
 		});
@@ -99,7 +99,7 @@ describe('src/client/index', () => {
 
 			await client.downloadCoubs(coubs, type, modalPopup, interval);
 
-			expect(setContentSpy).toBeCalledTimes(totalPages);
+			expect(setContentSpy).toHaveBeenCalledTimes(totalPages);
 			expect(setContentSpy.mock.calls).toMatchSnapshot();
 		});
 
@@ -108,7 +108,7 @@ describe('src/client/index', () => {
 
 			await client.downloadCoubs(coubs, type, modalPopup, interval);
 
-			expect(sleepSpy).toBeCalledTimes(totalPages);
+			expect(sleepSpy).toHaveBeenCalledTimes(totalPages);
 			expect(sleepSpy.mock.calls).toMatchSnapshot();
 		});
 
@@ -177,7 +177,7 @@ describe('src/client/index', () => {
 		it('should close popup', async () => {
 			await client.execute(profile);
 
-			expect(closePopupSpy).toBeCalled();
+			expect(closePopupSpy).toHaveBeenCalled();
 		});
 	});
 });

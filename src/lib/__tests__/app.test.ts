@@ -40,7 +40,7 @@ describe('src/lib/app', () => {
 		it('should get profiles', async () => {
 			await app.run();
 
-			expect(profiles.getProfiles).toBeCalled();
+			expect(profiles.getProfiles).toHaveBeenCalled();
 		});
 
 		it('should output error if no profiles', async () => {
@@ -54,9 +54,9 @@ describe('src/lib/app', () => {
 		it('should output info', async () => {
 			await app.run();
 
-			expect(logger.info).toBeCalledWith(`Downloading ${profile1}...`);
-			expect(logger.info).toBeCalledWith(`Downloading ${profile2}...`);
-			expect(logger.info).toBeCalledWith('Done!');
+			expect(logger.info).toHaveBeenCalledWith(`Downloading ${profile1}...`);
+			expect(logger.info).toHaveBeenCalledWith(`Downloading ${profile2}...`);
+			expect(logger.info).toHaveBeenCalledWith('Done!');
 		});
 
 		it('should download coubs for each profile', async () => {

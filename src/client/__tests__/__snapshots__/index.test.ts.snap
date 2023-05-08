@@ -1,58 +1,58 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`src/client/index downloadCoubs should append to coubs 1`] = `
-Array [
-  Object {
+[
+  {
     "id": 1,
   },
-  Object {
+  {
     "id": 2,
   },
-  Object {
+  {
     "id": 3,
   },
-  Object {
+  {
     "id": 4,
   },
-  Object {
+  {
     "id": 5,
   },
-  Object {
+  {
     "id": 6,
   },
-  Object {
+  {
     "id": 7,
   },
-  Object {
+  {
     "id": 8,
   },
 ]
 `;
 
 exports[`src/client/index downloadCoubs should download json 1`] = `
-Array [
-  Array [
+[
+  [
     "/api/v2/timeline/likes?all=true&order_by=date&per_page=25&page=1",
   ],
-  Array [
+  [
     "/api/v2/timeline/likes?all=true&order_by=date&per_page=25&page=2",
   ],
-  Array [
+  [
     "/api/v2/timeline/likes?all=true&order_by=date&per_page=25&page=3",
   ],
 ]
 `;
 
 exports[`src/client/index downloadCoubs should download json 2`] = `
-Array [
-  Object {
+[
+  {
     "type": "return",
-    "value": Object {
-      "coubs": Array [
-        Object {
+    "value": {
+      "coubs": [
+        {
           "id": 3,
         },
-        Object {
+        {
           "id": 4,
         },
       ],
@@ -60,14 +60,14 @@ Array [
       "total_pages": 3,
     },
   },
-  Object {
+  {
     "type": "return",
-    "value": Object {
-      "coubs": Array [
-        Object {
+    "value": {
+      "coubs": [
+        {
           "id": 5,
         },
-        Object {
+        {
           "id": 6,
         },
       ],
@@ -75,14 +75,14 @@ Array [
       "total_pages": 3,
     },
   },
-  Object {
+  {
     "type": "return",
-    "value": Object {
-      "coubs": Array [
-        Object {
+    "value": {
+      "coubs": [
+        {
           "id": 7,
         },
-        Object {
+        {
           "id": 8,
         },
       ],
@@ -94,36 +94,36 @@ Array [
 `;
 
 exports[`src/client/index downloadCoubs should set popup content 1`] = `
-Array [
-  Array [
+[
+  [
     "Downloading likes (page 1 of 3)...",
   ],
-  Array [
+  [
     "Downloading likes (page 2 of 3)...",
   ],
-  Array [
+  [
     "Downloading likes (page 3 of 3)...",
   ],
 ]
 `;
 
 exports[`src/client/index downloadCoubs should sleep on each request 1`] = `
-Array [
-  Array [
+[
+  [
     300,
   ],
-  Array [
+  [
     300,
   ],
-  Array [
+  [
     300,
   ],
 ]
 `;
 
 exports[`src/client/index execute should download JSON file 1`] = `
-Array [
-  Array [
+[
+  [
     "username.json",
     "[]",
   ],
@@ -131,18 +131,18 @@ Array [
 `;
 
 exports[`src/client/index execute should download likes and favourites 1`] = `
-Array [
-  Array [
-    Array [],
+[
+  [
+    [],
     "likes",
-    Object {
-      "popup": Object {
+    {
+      "popup": {
         "close": [MockFunction] {
-          "calls": Array [
-            Array [],
+          "calls": [
+            [],
           ],
-          "results": Array [
-            Object {
+          "results": [
+            {
               "type": "return",
               "value": undefined,
             },
@@ -154,17 +154,17 @@ Array [
     },
     300,
   ],
-  Array [
-    Array [],
+  [
+    [],
     "favourites",
-    Object {
-      "popup": Object {
+    {
+      "popup": {
         "close": [MockFunction] {
-          "calls": Array [
-            Array [],
+          "calls": [
+            [],
           ],
-          "results": Array [
-            Object {
+          "results": [
+            {
               "type": "return",
               "value": undefined,
             },

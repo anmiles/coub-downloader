@@ -46,26 +46,26 @@ describe('src/lib/renderer', () => {
 		it('should get templates', () => {
 			original.render(profile, coubs);
 
-			expect(renderer.getTemplates).toBeCalledWith();
+			expect(renderer.getTemplates).toHaveBeenCalledWith();
 		});
 
 		it('should format each coub', () => {
 			original.render(profile, coubs);
 
-			expect(renderer.formatCoub).toBeCalledWith(coub1, templates);
-			expect(renderer.formatCoub).toBeCalledWith(coub2, templates);
+			expect(renderer.formatCoub).toHaveBeenCalledWith(coub1, templates);
+			expect(renderer.formatCoub).toHaveBeenCalledWith(coub2, templates);
 		});
 
 		it('should format index template using concatenated coubs', () => {
 			original.render(profile, coubs);
 
-			expect(renderer.format).toBeCalledWith('index', { coubs : 'coub1_formatted\ncoub2_formatted' }, templates);
+			expect(renderer.format).toHaveBeenCalledWith('index', { coubs : 'coub1_formatted\ncoub2_formatted' }, templates);
 		});
 
 		it('should output formatted index template to html file', () => {
 			original.render(profile, coubs);
 
-			expect(fs.writeFileSync).toBeCalledWith(indexFile, 'index_formatted');
+			expect(fs.writeFileSync).toHaveBeenCalledWith(indexFile, 'index_formatted');
 		});
 	});
 
@@ -73,20 +73,20 @@ describe('src/lib/renderer', () => {
 		it('should get template directory', () => {
 			original.getTemplates();
 
-			expect(paths.getTemplateDir).toBeCalledWith();
+			expect(paths.getTemplateDir).toHaveBeenCalledWith();
 		});
 
 		it('should read template directory', () => {
 			original.getTemplates();
 
-			expect(fs.readdirSync).toBeCalledWith(templateDir);
+			expect(fs.readdirSync).toHaveBeenCalledWith(templateDir);
 		});
 
 		it('should read each template', () => {
 			original.getTemplates();
 
-			expect(fs.readFileSync).toBeCalledWith('templateDir/template1');
-			expect(fs.readFileSync).toBeCalledWith('templateDir/template2');
+			expect(fs.readFileSync).toHaveBeenCalledWith('templateDir/template1');
+			expect(fs.readFileSync).toHaveBeenCalledWith('templateDir/template2');
 		});
 
 		it('should return indexed templates collection', () => {
@@ -103,7 +103,7 @@ describe('src/lib/renderer', () => {
 
 			original.formatCoub(coub, templates);
 
-			expect(renderer.preventUnsafeString).toBeCalledWith(invalidID, 'coub ID');
+			expect(renderer.preventUnsafeString).toHaveBeenCalledWith(invalidID, 'coub ID');
 		});
 
 		it('should escape coub.title', () => {
@@ -112,7 +112,7 @@ describe('src/lib/renderer', () => {
 			original.formatCoub(coub, templates);
 
 			coub.title = escapedString;
-			expect(renderer.format).toBeCalledWith('coub', coub, templates);
+			expect(renderer.format).toHaveBeenCalledWith('coub', coub, templates);
 		});
 
 		it('should set coub.audio to blank space if audio does not exist', () => {
@@ -128,7 +128,7 @@ describe('src/lib/renderer', () => {
 			original.formatCoub(coub, templates);
 
 			coub.audio = '&nbsp;';
-			expect(renderer.format).toBeCalledWith('coub', coub, templates);
+			expect(renderer.format).toHaveBeenCalledWith('coub', coub, templates);
 		});
 
 		it('should set coub.audio to blank space if there is no audio', () => {
@@ -144,7 +144,7 @@ describe('src/lib/renderer', () => {
 			original.formatCoub(coub, templates);
 
 			coub.audio = '&nbsp;';
-			expect(renderer.format).toBeCalledWith('coub', coub, templates);
+			expect(renderer.format).toHaveBeenCalledWith('coub', coub, templates);
 		});
 
 		it('should not set coub.audio if audio exists', () => {
@@ -164,7 +164,7 @@ describe('src/lib/renderer', () => {
 
 			original.formatCoub(coub, templates);
 
-			expect(renderer.format).toBeCalledWith('coub', coub, templates);
+			expect(renderer.format).toHaveBeenCalledWith('coub', coub, templates);
 		});
 
 		it('should set coub.externals to blank space if there is no external videos', () => {
@@ -180,7 +180,7 @@ describe('src/lib/renderer', () => {
 			original.formatCoub(coub, templates);
 
 			coub.externals = '&nbsp;';
-			expect(renderer.format).toBeCalledWith('coub', coub, templates);
+			expect(renderer.format).toHaveBeenCalledWith('coub', coub, templates);
 		});
 
 		it('should set coub.externals to formatted externals if there are external videos', () => {
@@ -196,7 +196,7 @@ describe('src/lib/renderer', () => {
 			original.formatCoub(coub, templates);
 
 			coub.externals = 'external_formatted\nexternal_formatted';
-			expect(renderer.format).toBeCalledWith('coub', coub, templates);
+			expect(renderer.format).toHaveBeenCalledWith('coub', coub, templates);
 		});
 
 		it('should check each of coub.externals to be a safe string', () => {
@@ -211,8 +211,8 @@ describe('src/lib/renderer', () => {
 
 			original.formatCoub(coub, templates);
 
-			expect(renderer.preventUnsafeString).toBeCalledWith('service1', 'service name of external video');
-			expect(renderer.preventUnsafeString).toBeCalledWith('i%va!id', 'service name of external video');
+			expect(renderer.preventUnsafeString).toHaveBeenCalledWith('service1', 'service name of external video');
+			expect(renderer.preventUnsafeString).toHaveBeenCalledWith('i%va!id', 'service name of external video');
 		});
 
 		it('should escape coub.externals.*.title', () => {
@@ -227,7 +227,7 @@ describe('src/lib/renderer', () => {
 			original.formatCoub(coub, templates);
 
 			coub.media_blocks.external_raw_videos[0].title = escapedString;
-			expect(renderer.format).toBeCalledWith('coub', coub, templates);
+			expect(renderer.format).toHaveBeenCalledWith('coub', coub, templates);
 		});
 
 		it('should throw if coub.likes_count is not a number', () => {
@@ -237,7 +237,7 @@ describe('src/lib/renderer', () => {
 
 			const func = () => original.formatCoub(coub, templates);
 
-			expect(func).toThrowError('coub.likes_count is not_a_number that is not a number');
+			expect(func).toThrow('coub.likes_count is not_a_number that is not a number');
 		});
 
 		it('should throw if coub.views_count is not a number', () => {
@@ -247,7 +247,7 @@ describe('src/lib/renderer', () => {
 
 			const func = () => original.formatCoub(coub, templates);
 
-			expect(func).toThrowError('coub.views_count is not_a_number that is not a number');
+			expect(func).toThrow('coub.views_count is not_a_number that is not a number');
 		});
 
 		it('should format each external block', () => {
@@ -262,8 +262,8 @@ describe('src/lib/renderer', () => {
 
 			original.formatCoub(coub, templates);
 
-			expect(renderer.format).toBeCalledWith('external', coub.media_blocks.external_raw_videos[0], templates);
-			expect(renderer.format).toBeCalledWith('external', coub.media_blocks.external_raw_videos[1], templates);
+			expect(renderer.format).toHaveBeenCalledWith('external', coub.media_blocks.external_raw_videos[0], templates);
+			expect(renderer.format).toHaveBeenCalledWith('external', coub.media_blocks.external_raw_videos[1], templates);
 		});
 
 		it('should return formatted coub', () => {
@@ -282,7 +282,7 @@ describe('src/lib/renderer', () => {
 
 			const func = () => original.preventUnsafeString(notAString as unknown as string, 'invalidString');
 
-			expect(func).toThrowError(error);
+			expect(func).toThrow(error);
 		});
 
 		it('should throw if argument is not alphanumeric string', () => {
@@ -291,7 +291,7 @@ describe('src/lib/renderer', () => {
 
 			const func = () => original.preventUnsafeString(invalidString, 'invalidString');
 
-			expect(func).toThrowError(error);
+			expect(func).toThrow(error);
 		});
 
 		it('should not throw if argument is alphanumeric string', () => {
