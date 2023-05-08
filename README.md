@@ -1,4 +1,4 @@
-# coub-download
+# coub-downloader
 
 Downloads your favourite and liked coubs into local html file
 

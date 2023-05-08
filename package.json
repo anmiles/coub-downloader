@@ -1,5 +1,5 @@
 {
-  "name": "coub-download",
+  "name": "coub-downloader",
   "version": "2.0.1",
   "description": "Download all favorite coubs",
   "keywords": [
@@ -7,8 +7,8 @@
     "download"
   ],
   "author": "Anatoliy Oblaukhov",
-  "homepage": "https://gitlab.com/anmiles/coub-download",
-  "repository": "gitlab:anmiles/coub-download",
+  "homepage": "https://gitlab.com/anmiles/coub-downloader",
+  "repository": "gitlab:anmiles/coub-downloader",
   "license": "MIT",
   "engines": {
     "node": ">=12.22.1"
