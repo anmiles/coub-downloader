@@ -30,7 +30,7 @@
   },
   "dependencies": {
     "@anmiles/downloader": "^2.0.5",
-    "@anmiles/logger": "^2.1.3",
+    "@anmiles/logger": "^3.0.0",
     "@anmiles/prototypes": "^2.0.2",
     "@anmiles/sleep": "^1.0.3",
     "lodash": "^4.17.21"
