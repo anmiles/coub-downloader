@@ -4,8 +4,8 @@ import { getProfilesFile } from './paths';
 
 import profiles from './profiles';
 
-export { getProfiles, setProfiles, create };
-export default { getProfiles, setProfiles, create };
+export { getProfiles, setProfiles, createProfile, filterProfiles };
+export default { getProfiles, setProfiles, createProfile, filterProfiles };
 
 function getProfiles(): string[] {
 	const profilesFile = getProfilesFile();
@@ -17,9 +17,9 @@ function setProfiles(profiles: string[]): void {
 	fs.writeJSON(profilesFile, profiles);
 }
 
-function create(profile: string): void {
+function createProfile(profile: string): void {
 	if (!profile) {
-		throw 'Usage: `npm run create profile` where `profile` - is any profile name you want';
+		throw 'Usage: `npm run create <profile>` where `profile` - is any profile name you want';
 	}
 
 	const existingProfiles = profiles.getProfiles();
@@ -30,4 +30,22 @@ function create(profile: string): void {
 
 	existingProfiles.push(profile);
 	profiles.setProfiles(existingProfiles);
+}
+
+function filterProfiles(profile?: string): string[] {
+	const existingProfiles = profiles.getProfiles();
+
+	if (existingProfiles.length === 0) {
+		throw 'Please `npm run create` at least one profile';
+	}
+
+	if (!profile) {
+		return existingProfiles;
+	}
+
+	if (existingProfiles.includes(profile)) {
+		return [ profile ];
+	}
+
+	throw `Profile '${profile}' does not exist`;
 }
