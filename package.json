@@ -1,6 +1,6 @@
 {
   "name": "coub-downloader",
-  "version": "4.0.0",
+  "version": "4.0.1",
   "description": "Download favorite and liked coubs into local html file",
   "keywords": [
     "coub",
