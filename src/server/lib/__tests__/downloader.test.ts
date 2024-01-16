@@ -15,7 +15,7 @@ jest.mock<typeof downloader>('../downloader', () => ({
 	downloadAll   : jest.fn().mockImplementation(() => {}),
 	downloadCoub  : jest.fn().mockImplementation(() => {}),
 	downloadMedia : jest.fn().mockImplementation(() => {}),
-	selectBestURL : jest.fn().mockImplementation((coub, key, required) => required || fileExists ? `${key}.url` : undefined),
+	selectBestURL : jest.fn().mockImplementation((_coub, key, required) => required || fileExists ? `${key}.url` : undefined),
 }));
 
 jest.mock<Partial<typeof download>>('@anmiles/downloader', () => ({
@@ -180,7 +180,7 @@ describe('src/lib/downloader', () => {
 
 		it('should throw if URL is not belong to whitelisted host', async () => {
 			const url   = 'http://wrong.url';
-			const error = 'Media url http://wrong.url is not belong to any of whitelisted hosts https://coub-anubis-a.akamaized.net/ https://coub-attachments.akamaized.net/';
+			const error = 'Media url http://wrong.url is not belong to any of whitelisted hosts https://coub-anubis-a.akamaized.net/ https://coub-attachments.akamaized.net/ https://3fc4ed44-3fbc-419a-97a1-a29742511391.selcdn.net/';
 
 			const func = () => original.downloadMedia(profile, id1, url);
 

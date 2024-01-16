@@ -9,15 +9,19 @@ export default { getOutputDir, getMediaDir, getTemplateDir, getCoubsFile, getPro
 const dirPaths = {
 	input     : 'input',
 	output    : 'output',
-	templates : 'src/templates',
+	templates : 'src/server/templates',
 };
 
 function getOutputDir(profile: string): string {
-	return fs.ensureDir(path.join(dirPaths.output, profile));
+	const dir = path.join(dirPaths.output, profile);
+	fs.ensureDir(dir, { create : true });
+	return dir;
 }
 
 function getMediaDir(profile: string): string {
-	return fs.ensureDir(path.join(dirPaths.output, profile, 'media'));
+	const dir = path.join(dirPaths.output, profile, 'media');
+	fs.ensureDir(dir, { create : true });
+	return dir;
 }
 
 function getTemplateDir(): string {
@@ -29,14 +33,20 @@ function getProfilesFile(): string {
 }
 
 function getCoubsFile(profile: string): string {
-	return fs.ensureFile(path.join(dirPaths.input, `${profile}.json`));
+	const file = path.join(dirPaths.input, `${profile}.json`);
+	fs.ensureFile(file, { create : true });
+	return file;
 }
 
 function getIndexFile(profile: string): string {
-	return fs.ensureFile(path.join(dirPaths.output, profile, 'index.html'));
+	const file = path.join(dirPaths.output, profile, 'index.html');
+	fs.ensureFile(file, { create : true });
+	return file;
 }
 
 function getMediaFile(profile: string, coubID: string, mediaURL: string): string {
 	const ext = mediaURL.split('.').pop();
-	return path.join(paths.getMediaDir(profile), coubID, `${coubID}.${ext}`);
+	const dir = path.join(paths.getMediaDir(profile), coubID);
+	fs.ensureDir(dir, { create : true });
+	return path.join(dir, `${coubID}.${ext}`);
 }

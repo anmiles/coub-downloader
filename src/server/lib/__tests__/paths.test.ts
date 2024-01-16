@@ -2,7 +2,7 @@ import fs from 'fs';
 import path from 'path';
 
 import paths from '../paths';
-const original = jest.requireActual('../paths').default as typeof paths;
+const originalPaths = jest.requireActual('../paths').default as typeof paths;
 jest.mock<typeof paths>('../paths', () => ({
 	getOutputDir    : jest.fn().mockImplementation(() => outputDir),
 	getMediaDir     : jest.fn().mockImplementation(() => mediaDir),
@@ -13,12 +13,14 @@ jest.mock<typeof paths>('../paths', () => ({
 	getMediaFile    : jest.fn().mockImplementation(() => mediaFile),
 }));
 
+const originalPath = jest.requireActual('path') as typeof path;
 jest.mock<Partial<typeof path>>('path', () => ({
-	join : jest.fn().mockImplementation((...args) => args.join('/')),
+	join    : jest.fn().mockImplementation((...args) => args.join('/')),
+	dirname : jest.fn().mockImplementation((_path) => originalPath.dirname(_path)),
 }));
 
-const ensureDirSpy  = jest.spyOn(fs, 'ensureDir').mockImplementation((dirPath) => dirPath);
-const ensureFileSpy = jest.spyOn(fs, 'ensureFile').mockImplementation((filePath) => filePath);
+const ensureDirSpy  = jest.spyOn(fs, 'ensureDir').mockImplementation(() => ({ created : false, exists : true }));
+const ensureFileSpy = jest.spyOn(fs, 'ensureFile').mockImplementation(() => ({ created : false, exists : true }));
 
 const profile  = 'username';
 const coubID   = 'coub1';
@@ -26,7 +28,7 @@ const mediaURL = 'test.url';
 
 const outputDir    = 'output/username';
 const mediaDir     = 'output/username/media';
-const templateDir  = 'src/templates';
+const templateDir  = 'src/server/templates';
 const coubsFile    = 'input/username.json';
 const profilesFile = 'input/profiles.json';
 const indexFile    = 'output/username/index.html';
@@ -35,13 +37,13 @@ const mediaFile    = 'output/username/media/coub1/coub1.url';
 describe('src/lib/paths', () => {
 	describe('getOutputDir', () => {
 		it('should call ensureDir', () => {
-			original.getOutputDir(profile);
+			originalPaths.getOutputDir(profile);
 
-			expect(ensureDirSpy).toHaveBeenCalledWith(outputDir);
+			expect(ensureDirSpy).toHaveBeenCalledWith(outputDir, { create : true });
 		});
 
 		it('should return outputDir', () => {
-			const result = original.getOutputDir(profile);
+			const result = originalPaths.getOutputDir(profile);
 
 			expect(result).toEqual(outputDir);
 		});
@@ -49,13 +51,13 @@ describe('src/lib/paths', () => {
 
 	describe('getMediaDir', () => {
 		it('should call ensureDir', () => {
-			original.getMediaDir(profile);
+			originalPaths.getMediaDir(profile);
 
-			expect(ensureDirSpy).toHaveBeenCalledWith(mediaDir);
+			expect(ensureDirSpy).toHaveBeenCalledWith(mediaDir, { create : true });
 		});
 
 		it('should return mediaDir', () => {
-			const result = original.getMediaDir(profile);
+			const result = originalPaths.getMediaDir(profile);
 
 			expect(result).toEqual(mediaDir);
 		});
@@ -63,7 +65,7 @@ describe('src/lib/paths', () => {
 
 	describe('getTemplateDir', () => {
 		it('should return templateDir', () => {
-			const result = original.getTemplateDir();
+			const result = originalPaths.getTemplateDir();
 
 			expect(result).toEqual(templateDir);
 		});
@@ -71,13 +73,13 @@ describe('src/lib/paths', () => {
 
 	describe('getCoubsFile', () => {
 		it('should call ensureFile', () => {
-			original.getCoubsFile(profile);
+			originalPaths.getCoubsFile(profile);
 
-			expect(ensureFileSpy).toHaveBeenCalledWith(coubsFile);
+			expect(ensureFileSpy).toHaveBeenCalledWith(coubsFile, { create : true });
 		});
 
 		it('should return coubsFile', () => {
-			const result = original.getCoubsFile(profile);
+			const result = originalPaths.getCoubsFile(profile);
 
 			expect(result).toEqual(coubsFile);
 		});
@@ -85,7 +87,7 @@ describe('src/lib/paths', () => {
 
 	describe('getProfilesFile', () => {
 		it('should return profilesFile', () => {
-			const result = original.getProfilesFile();
+			const result = originalPaths.getProfilesFile();
 
 			expect(result).toEqual(profilesFile);
 		});
@@ -93,13 +95,13 @@ describe('src/lib/paths', () => {
 
 	describe('getIndexFile', () => {
 		it('should call ensureFile', () => {
-			original.getIndexFile(profile);
+			originalPaths.getIndexFile(profile);
 
-			expect(ensureFileSpy).toHaveBeenCalledWith(indexFile);
+			expect(ensureFileSpy).toHaveBeenCalledWith(indexFile, { create : true });
 		});
 
 		it('should return likesFile', () => {
-			const result = original.getIndexFile(profile);
+			const result = originalPaths.getIndexFile(profile);
 
 			expect(result).toEqual(indexFile);
 		});
@@ -107,13 +109,19 @@ describe('src/lib/paths', () => {
 
 	describe('getMediaFile', () => {
 		it('should call getMediaDir', () => {
-			original.getMediaFile(profile, coubID, mediaURL);
+			originalPaths.getMediaFile(profile, coubID, mediaURL);
 
 			expect(paths.getMediaDir).toHaveBeenCalledWith(profile);
 		});
 
+		it('should ensure parent dir', () => {
+			originalPaths.getMediaFile(profile, coubID, mediaURL);
+
+			expect(ensureDirSpy).toHaveBeenCalledWith(path.dirname(mediaFile), { create : true });
+		});
+
 		it('should return mediaFile', () => {
-			const result = original.getMediaFile(profile, coubID, mediaURL);
+			const result = originalPaths.getMediaFile(profile, coubID, mediaURL);
 
 			expect(result).toEqual(mediaFile);
 		});

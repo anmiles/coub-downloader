@@ -50,6 +50,7 @@ async function downloadMedia(profile: string, coubID: string, url: string | unde
 	const whitelistedHosts = [
 		'https://coub-anubis-a.akamaized.net/',
 		'https://coub-attachments.akamaized.net/',
+		'https://3fc4ed44-3fbc-419a-97a1-a29742511391.selcdn.net/',
 	];
 
 	if (whitelistedHosts.filter((host) => url.startsWith(host)).length === 0) {
@@ -68,7 +69,7 @@ async function downloadMedia(profile: string, coubID: string, url: string | unde
 function selectBestURL(coub: Coub, key: keyof typeof coub.file_versions.html5, required?: boolean): string | undefined {
 	const fileVersions = coub.file_versions?.html5;
 	const hasVersions  = fileVersions && fileVersions[key] !== undefined && Object.keys(fileVersions[key]).length > 0;
-	const bestURL      = hasVersions ? Object.values(fileVersions[key]).sort((v1: CoubFile, v2: CoubFile) => v2.size - v1.size)[0].url : undefined;
+	const bestURL      = hasVersions ? Object.values(fileVersions[key]).sort((v1: CoubFile, v2: CoubFile) => v2.size - v1.size)[0]?.url : undefined;
 
 	if (bestURL === undefined && required) {
 		throw `There are no file_versions.html5.${key} for coub ${coub.permalink}`;

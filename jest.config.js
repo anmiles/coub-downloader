@@ -1,18 +1,19 @@
 module.exports = {
-	preset     : 'ts-jest',
+	preset    : 'ts-jest',
+	transform : {
+		'^.+\\.tsx?$' : 'ts-jest',
+	},
+
 	clearMocks : true,
 
 	roots     : [ '<rootDir>/src' ],
 	testMatch : [ '<rootDir>/src/**/__tests__/*.test.ts' ],
-	transform : {
-		'^.+\\.ts$' : 'ts-jest',
-	},
+
 	collectCoverageFrom : [
 		'<rootDir>/src/**/*.ts',
 		'!<rootDir>/src/**/*.d.ts',
-		'!<rootDir>/src/*.ts',
-		'!<rootDir>/src/types/*.ts',
-		'!<rootDir>/src/client/types/*.ts',
+		'!<rootDir>/src/server/*.ts',
+		'!<rootDir>/src/**/types/*.ts',
 
 		'!**/node_modules/**',
 		'!**/__tests__/**',

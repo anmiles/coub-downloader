@@ -59,7 +59,7 @@ describe('src/client/index', () => {
 
 			await client.sleep(sleepMilliseconds);
 
-			expect(setTimeoutSpy.mock.calls[0][1]).toBe(sleepMilliseconds);
+			expect(setTimeoutSpy.mock.calls[0]?.[1]).toBe(sleepMilliseconds);
 			setTimeoutSpy.mockRestore();
 		});
 
@@ -125,19 +125,19 @@ describe('src/client/index', () => {
 		const filename = 'filename';
 		const text     = 'text';
 
-		let clickSpy: jest.SpyInstance;
+		const originalClick = HTMLAnchorElement.prototype.click;
 		let downloadLink: HTMLAnchorElement;
 
 		beforeAll(() => {
-			clickSpy = jest.spyOn(HTMLAnchorElement.prototype, 'click');
-		});
-
-		beforeEach(() => {
 			downloadLink = document.createElement('a');
 
-			clickSpy.mockImplementation(function() {
-				downloadLink = this;
-			});
+			HTMLAnchorElement.prototype.click = function() {
+				downloadLink = this as HTMLAnchorElement;
+			};
+		});
+
+		afterAll(() => {
+			HTMLAnchorElement.prototype.click = originalClick;
 		});
 
 		it('should create and click download link', () => {

@@ -1,0 +1,20 @@
+{
+	"extends": "../../tsconfig.json",
+
+	"compilerOptions": {
+		"rootDir": ".",
+		"outDir": "../../dist/client",
+
+		"module": "ES2020",
+		"moduleResolution": "Bundler",
+		"resolveJsonModule": false
+	},
+
+	"include": [
+		".",
+	],
+
+	"exclude": [
+		"**/__tests__/",
+	],
+}

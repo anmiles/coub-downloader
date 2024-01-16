@@ -127,7 +127,7 @@ describe('src/lib/renderer', () => {
 
 			original.formatCoub(coub, templates);
 
-			coub.audio = '&nbsp;';
+			coub['audio'] = '&nbsp;';
 			expect(renderer.format).toHaveBeenCalledWith('coub', coub, templates);
 		});
 
@@ -143,7 +143,7 @@ describe('src/lib/renderer', () => {
 
 			original.formatCoub(coub, templates);
 
-			coub.audio = '&nbsp;';
+			coub['audio'] = '&nbsp;';
 			expect(renderer.format).toHaveBeenCalledWith('coub', coub, templates);
 		});
 
@@ -179,7 +179,7 @@ describe('src/lib/renderer', () => {
 
 			original.formatCoub(coub, templates);
 
-			coub.externals = '&nbsp;';
+			coub['externals'] = '&nbsp;';
 			expect(renderer.format).toHaveBeenCalledWith('coub', coub, templates);
 		});
 
@@ -195,7 +195,7 @@ describe('src/lib/renderer', () => {
 
 			original.formatCoub(coub, templates);
 
-			coub.externals = 'external_formatted\nexternal_formatted';
+			coub['externals'] = 'external_formatted\nexternal_formatted';
 			expect(renderer.format).toHaveBeenCalledWith('coub', coub, templates);
 		});
 
@@ -226,7 +226,7 @@ describe('src/lib/renderer', () => {
 
 			original.formatCoub(coub, templates);
 
-			coub.media_blocks.external_raw_videos[0].title = escapedString;
+			coub.media_blocks.external_raw_videos[0]!.title = escapedString;
 			expect(renderer.format).toHaveBeenCalledWith('coub', coub, templates);
 		});
 
@@ -360,6 +360,24 @@ describe('src/lib/renderer', () => {
 			const result = original.format(rootTemplate, json, templates);
 
 			expect(result).toBe('body: value is 10');
+		});
+
+		it('should throw if there is no template with a specified key', () => {
+			const rootTemplate = 'wrong_template';
+			const templates    = { root : 'body: {{body}}', body : 'value is {{val.current}}' };
+			const json         = { val : { current : 10 } };
+
+			expect(() => original.format(rootTemplate, json, templates)).toThrow('Template \'wrong_template\' doesn\'t exist or empty');
+		});
+
+		it('should process empty template', () => {
+			const rootTemplate = 'root';
+			const templates    = { root : '' };
+			const json         = { };
+
+			const result = original.format(rootTemplate, json, templates);
+
+			expect(result).toBe('');
 		});
 	});
 });

@@ -34,7 +34,7 @@ You can create as many profiles as you want.
 	- Log in
 	- Open developer console
 	- Paste script and execute
-		- note to remove `export ` at the very top of the script
+		- note to remove `export ` word at the very top of the script
 	- When asked, choose profile (see [Adding profiles](#adding-profiles) above).
 	- Look at the downloading progress
 	- JSON file will be asked to download, save it as to `input` directory
@@ -45,8 +45,3 @@ You can create as many profiles as you want.
 
 Open the file `output/index.html` in the browser.
 You can copy entire `output` folder and paste it anywhere or save to USB drive. This is your full backup of all your favourited or liked coubs in highest quality.
-
-## Known problems
-
-- `npm run build` failed with `node_modules/@types/node/globals.d.ts:72:13 - error TS2403: Subsequent variable declarations must have the same type.  Variable 'AbortSignal' must be of type '{ new (): AbortSignal; prototype: AbortSignal; abort(reason?: any): AbortSignal; timeout(milliseconds: number): AbortSignal; }', but here has type '{ new (): AbortSignal; prototype: AbortSignal; }'.`
-  - Just delete `node_modules` and run `npm install` again

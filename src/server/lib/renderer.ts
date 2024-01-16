@@ -21,7 +21,7 @@ function getTemplates(): Record<string, string> {
 	const templateDir = getTemplateDir();
 
 	return fs.readdirSync(templateDir).reduce((obj, filename) => {
-		const name = filename.split('.')[0];
+		const name = filename.split('.')[0]!;
 		const html = fs.readFileSync(path.join(templateDir, filename)).toString().trim();
 		obj[name]  = html;
 		return obj;
@@ -68,22 +68,29 @@ function preventUnsafeString(s: string, description: string): void {
 }
 
 function escapeString(s: string): string {
-	const lookup: Record<string, string> = {
-		'&' : '&amp;',
-		'"' : '&quot;',
-		'<' : '&lt;',
-		'>' : '&gt;',
-	};
+	[
+		{ symbol : '&', entity : '&amp;' },
+		{ symbol : '"', entity : '&quot;' },
+		{ symbol : '<', entity : '&lt;' },
+		{ symbol : '>', entity : '&gt;' },
+	].forEach(({ symbol, entity }) => {
+		s = s.replaceAll(symbol, entity);
+	});
 
-	return s.replace(/[&"<>]/g, (c: string) => lookup[c]);
+	return s;
 }
 
 function format(rootTemplate: string, json: Record<string, unknown>, templates: Record<string, string>): string {
 	const regex = /\{\{([^}]+)\}\}/g;
-	let html    = templates[rootTemplate];
+
+	let html = templates[rootTemplate];
+
+	if (typeof html === 'undefined') {
+		throw `Template '${rootTemplate}' doesn't exist or empty`;
+	}
 
 	do {
-		html = html.replace(regex, (match, key: string) => (_.get(json, key) || _.get(templates, key)) as string);
+		html = html.replace(regex, (_match, key: string) => (_.get(json, key) || _.get(templates, key)) as string);
 	} while (regex.test(html));
 
 	return html;
