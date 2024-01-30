@@ -8,14 +8,15 @@
     "videos"
   ],
   "author": "Anatoliy Oblaukhov",
-  "homepage": "https://gitlab.com/anmiles/coub-downloader",
-  "repository": "gitlab:anmiles/coub-downloader",
+  "homepage": "https://github.com/anmiles/coub-downloader",
+  "repository": "github:anmiles/coub-downloader",
   "license": "MIT",
   "engines": {
     "node": ">=18.14.2"
   },
   "scripts": {
     "build": "rimraf dist && tsc -p ./src/server/tsconfig.build.json && tsc -p ./src/client/tsconfig.build.json",
+    "build:ci": "tsc -noEmit -p ./src/server/tsconfig.build.json && tsc -noEmit -p ./src/client/tsconfig.build.json",
     "lint": "eslint --ext .js,.ts .",
     "lint:fix": "npm run lint -- --fix",
     "test": "jest --verbose",
@@ -28,20 +29,20 @@
     "create": "node ./dist/server/create.js"
   },
   "dependencies": {
-    "@anmiles/downloader": "^4.0.0",
-    "@anmiles/logger": "^6.0.0",
-    "@anmiles/prototypes": "^9.0.0",
-    "@anmiles/sleep": "^3.0.0",
+    "@anmiles/downloader": "^4.0.2",
+    "@anmiles/logger": "^6.0.2",
+    "@anmiles/prototypes": "^9.0.2",
+    "@anmiles/sleep": "^3.0.2",
     "lodash": "^4.17.21"
   },
   "devDependencies": {
-    "@anmiles/eslint-config": "^5.0.0",
-    "@anmiles/tsconfig": "^2.0.0",
+    "@anmiles/eslint-config": "^5.0.2",
+    "@anmiles/tsconfig": "^2.0.1",
     "@types/jest": "^29.5.11",
     "@types/jquery": "^3.5.29",
     "@types/lodash": "^4.14.202",
-    "@typescript-eslint/eslint-plugin": "^6.19.0",
-    "@typescript-eslint/parser": "^6.19.0",
+    "@typescript-eslint/eslint-plugin": "^6.20.0",
+    "@typescript-eslint/parser": "^6.20.0",
     "eslint": "^8.56.0",
     "eslint-plugin-align-assignments": "^1.1.2",
     "eslint-plugin-import": "^2.29.1",
@@ -50,7 +51,7 @@
     "jest-environment-jsdom": "^29.7.0",
     "nyc": "^15.1.0",
     "rimraf": "^5.0.5",
-    "ts-jest": "^29.1.1",
+    "ts-jest": "^29.1.2",
     "typescript": "^5.3.3"
   }
 }
