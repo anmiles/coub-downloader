@@ -1,0 +1,40 @@
+{
+	"name": "coub-downloader-server",
+	"version": "0.1.0",
+	"description": "Download favorite and liked coubs into local html file",
+	"private": true,
+	"author": "Anatoliy Oblaukhov",
+	"homepage": "https://github.com/anmiles/coub-downloader/tree/main/server",
+	"repository": "github:anmiles/coub-downloader",
+	"license": "MIT",
+	"engines": {
+		"node": ">=18.18.0"
+	},
+	"scripts": {
+		"build": "rimraf dist && tsc -p ./tsconfig.build.json",
+		"build:ci": "tsc -noEmit -p ./tsconfig.build.json",
+		"test": "jest --verbose",
+		"test:coverage": "npm test -- --coverage",
+		"test:ci": "npm test -- --ci --coverage",
+		"test:watch": "npm test -- --watch",
+		"test:watch:coverage": "npm test -- --watch --coverage",
+		"test:report:coverage": "nyc report --nycrc-path ./coverage.config.js -t ./coverage --report-dir ./coverage",
+		"start": "node ./dist/server/index.js",
+		"create": "node ./dist/server/create.js"
+	},
+	"dependencies": {
+		"@anmiles/downloader": "^5.0.1",
+		"@anmiles/logger": "^7.0.1",
+		"@anmiles/prototypes": "^10.0.1",
+		"@anmiles/sleep": "^4.0.0",
+		"lodash": "^4.17.21"
+	},
+	"devDependencies": {
+		"@types/jest": "^29.5.12",
+		"@types/lodash": "^4.17.0",
+		"jest": "^29.7.0",
+		"nyc": "^15.1.0",
+		"ts-jest": "^29.1.2",
+		"typescript": "^5.4.2"
+	}
+}

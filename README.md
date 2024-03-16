@@ -6,12 +6,7 @@ Download favorite and liked coubs into local html file
 
 ## Installation
 
-1. Install dependencies
-`npm install`
-1. Build
-`npm run build`
-1. Test everything
-`npm test`
+`npm install coub-downloader`
 
 ## Adding profiles
 
@@ -29,7 +24,7 @@ You can create as many profiles as you want.
 ## Downloading
 
 1. Download all coubs metadata
-	- Copy script from `./dist/client/index.js` into clipboard
+	- Copy script from `./client/dist/index.js` into clipboard
 	- Open `https://coub.com` in the browser
 	- Log in
 	- Open developer console

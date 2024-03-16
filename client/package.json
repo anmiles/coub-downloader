@@ -1,0 +1,32 @@
+{
+	"name": "coub-downloader-client",
+	"version": "0.1.0",
+	"description": "Download favorite and liked coubs into local html file",
+	"private": true,
+	"author": "Anatoliy Oblaukhov",
+	"homepage": "https://github.com/anmiles/coub-downloader/tree/main/client",
+	"repository": "github:anmiles/coub-downloader",
+	"license": "MIT",
+	"engines": {
+		"node": ">=18.18.0"
+	},
+	"scripts": {
+		"build": "rimraf dist && tsc -p ./tsconfig.build.json",
+		"build:ci": "tsc -noEmit -p ./tsconfig.build.json",
+		"test": "jest --verbose",
+		"test:coverage": "npm test -- --coverage",
+		"test:ci": "npm test -- --ci --coverage",
+		"test:watch": "npm test -- --watch",
+		"test:watch:coverage": "npm test -- --watch --coverage",
+		"test:report:coverage": "nyc report --nycrc-path ./coverage.config.js -t ./coverage --report-dir ./coverage"
+	},
+	"devDependencies": {
+		"@types/jest": "^29.5.12",
+		"@types/jquery": "^3.5.29",
+		"jest": "^29.7.0",
+		"jest-environment-jsdom": "^29.7.0",
+		"nyc": "^15.1.0",
+		"ts-jest": "^29.1.2",
+		"typescript": "^5.4.2"
+	}
+}
