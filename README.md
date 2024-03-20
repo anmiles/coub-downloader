@@ -21,11 +21,6 @@ This application may work with multiple profiles (download videos liked from mul
 1. Execute `npm run create <profile>`
 You can create as many profiles as you want.
 
-## Authentication
-
-`npm run login` to login into all existing profiles
-`npm run login <profile>` to login into selected profile
-
 ## Downloading
 
 1. Download all coubs metadata
@@ -37,7 +32,7 @@ You can create as many profiles as you want.
 		- note to remove `export ` word at the very top of the script
 	- When asked, choose profile (see [Adding profiles](#adding-profiles) above).
 	- Look at the downloading progress
-	- JSON file will be asked to download, save it as to `input` directory
+	- JSON file will be asked to download, save it into the `input` directory
 2. Download all coubs media files
 	- `npm start`
 
