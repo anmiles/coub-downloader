@@ -12,7 +12,6 @@
 	},
 	"scripts": {
 		"build": "rimraf dist && tsc -p ./tsconfig.build.json",
-		"build:ci": "tsc -noEmit -p ./tsconfig.build.json",
 		"test": "jest --verbose",
 		"test:coverage": "npm test -- --coverage",
 		"test:ci": "npm test -- --ci --coverage",

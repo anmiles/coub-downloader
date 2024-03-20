@@ -22,7 +22,6 @@
 		"lint": "eslint .",
 		"lint:fix": "npm run lint -- --fix",
 		"build": "npm run build --workspaces",
-		"build:ci": "npm run build:ci --workspaces",
 		"test": "npm run test --workspaces",
 		"test:coverage": "npm run test:coverage --workspaces",
 		"test:ci": "npm run test:ci --workspaces",
