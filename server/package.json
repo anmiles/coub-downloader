@@ -20,10 +20,10 @@
 		"test:report:coverage": "nyc report --nycrc-path ./coverage.config.js -t ./coverage --report-dir ./coverage"
 	},
 	"dependencies": {
-		"@anmiles/downloader": "^5.0.1",
-		"@anmiles/logger": "^7.0.1",
-		"@anmiles/prototypes": "^10.0.1",
-		"@anmiles/sleep": "^4.0.0",
+		"@anmiles/downloader": "^5.0.2",
+		"@anmiles/logger": "^7.0.2",
+		"@anmiles/prototypes": "^10.0.4",
+		"@anmiles/sleep": "^4.0.1",
 		"lodash": "^4.17.21"
 	},
 	"devDependencies": {
