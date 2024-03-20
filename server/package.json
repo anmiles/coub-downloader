@@ -17,9 +17,7 @@
 		"test:ci": "npm test -- --ci --coverage",
 		"test:watch": "npm test -- --watch",
 		"test:watch:coverage": "npm test -- --watch --coverage",
-		"test:report:coverage": "nyc report --nycrc-path ./coverage.config.js -t ./coverage --report-dir ./coverage",
-		"start": "node ./dist/server/index.js",
-		"create": "node ./dist/server/create.js"
+		"test:report:coverage": "nyc report --nycrc-path ./coverage.config.js -t ./coverage --report-dir ./coverage"
 	},
 	"dependencies": {
 		"@anmiles/downloader": "^5.0.1",

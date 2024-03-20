@@ -26,8 +26,8 @@
 		"test:coverage": "npm run test:coverage --workspaces",
 		"test:ci": "npm run test:ci --workspaces",
 		"test:report:coverage": "npm run test:report:coverage --workspaces",
-		"start": "npm start --workspace server",
-		"create": "npm run create --workspace server"
+		"start": "node ./server/dist/index.js",
+		"create": "node ./server/dist/create.js"
 	},
 	"devDependencies": {
 		"@anmiles/eslint-config": "^7.0.1",

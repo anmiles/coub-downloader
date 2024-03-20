@@ -6,7 +6,7 @@ import '@anmiles/prototypes';
 const dirPaths = {
 	input     : 'input',
 	output    : 'output',
-	templates : 'src/server/templates',
+	templates : 'server/src/templates',
 };
 
 function getOutputDir(profile: string): string {

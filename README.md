@@ -6,7 +6,12 @@ Download favorite and liked coubs into local html file
 
 ## Installation
 
-`npm install coub-downloader`
+```bash
+git clone https://github.com/anmiles/coub-downloader.git
+cd coub-downloader
+npm clean-install
+npm run build
+```
 
 ## Adding profiles
 

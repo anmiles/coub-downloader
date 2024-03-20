@@ -29,7 +29,7 @@ const mediaURL = 'test.url';
 
 const outputDir    = 'output/username';
 const mediaDir     = 'output/username/media';
-const templateDir  = 'src/server/templates';
+const templateDir  = 'server/src/templates';
 const coubsFile    = 'input/username.json';
 const profilesFile = 'input/profiles.json';
 const indexFile    = 'output/username/index.html';
