@@ -6,6 +6,10 @@ module.exports = {
 		} ],
 	},
 
+	moduleNameMapper: {
+		'^@coub-downloader/(.*)$': '<rootDir>/../$1/src',
+	},
+
 	clearMocks: true,
 
 	roots    : [ '<rootDir>/src' ],

@@ -28,7 +28,7 @@
 		"@anmiles/logger": "^8.0.0",
 		"@anmiles/prototypes": "^11.0.0",
 		"@anmiles/sleep": "^5.0.0",
-		"@coub-downloader/shared": "file:../shared",
+		"@coub-downloader/shared": "*",
 		"lodash": "^4.17.21"
 	},
 	"devDependencies": {

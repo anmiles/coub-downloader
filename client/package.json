@@ -20,6 +20,10 @@
 		"test:watch:coverage": "npm test -- --watch --coverage",
 		"test:report:coverage": "nyc report"
 	},
+	"dependencies": {
+		"@anmiles/sleep": "^5.0.0",
+		"@coub-downloader/shared": "*"
+	},
 	"devDependencies": {
 		"@types/jest": "^29.5.14",
 		"@types/jquery": "^3.5.32",
@@ -29,9 +33,5 @@
 		"rimraf": "^6.0.1",
 		"ts-jest": "^29.3.4",
 		"typescript": "^5.8.3"
-	},
-	"dependencies": {
-		"@anmiles/sleep": "^5.0.0",
-		"@coub-downloader/shared": "file:../shared"
 	}
 }

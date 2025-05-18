@@ -154,7 +154,7 @@ describe('src/lib/downloader', () => {
 
 			const func = async (): Promise<void> => downloadAllCoubs(profile);
 
-			await expect(func).rejects.toEqual(new Error('Coubs json input\\username.json doesn\'t exist. Refer to README.md in order to obtain it'));
+			await expect(func).rejects.toEqual(new Error(`Coubs json input${path.sep}username.json doesn't exist. Refer to README.md in order to obtain it`));
 		});
 	});
 });
