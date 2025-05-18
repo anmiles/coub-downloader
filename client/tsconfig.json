@@ -1,18 +1,11 @@
 {
-	"extends" : "../tsconfig.json",
-
-	"compilerOptions" : {
-		"module" : "ESNext",
-		"target" : "ES2020",
-
-		"moduleResolution" : "Bundler",
-
-		"rootDir" : "./src",
-		"outDir" : "./dist",
-		"resolveJsonModule" : false,
-	},
+	"extends" : "../node_modules/@anmiles/tsconfig/tsconfig.client.json",
 
 	"include" : [
 		"src",
-	]
+	],
+
+	"compilerOptions": {
+		"verbatimModuleSyntax": false,
+	},
 }

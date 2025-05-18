@@ -1,0 +1,17 @@
+{
+	"extends" : "../node_modules/@anmiles/tsconfig/tsconfig.client.json",
+
+	"include" : [
+		"src",
+	],
+
+	"exclude" : [
+		"**/__tests__/",
+		"**/__mocks__/",
+	],
+
+	"compilerOptions" : {
+		"rootDir" : "./src",
+		"outDir" : "./dist/client",
+	},
+}

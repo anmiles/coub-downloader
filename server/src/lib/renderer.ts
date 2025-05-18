@@ -1,53 +1,66 @@
 import fs from 'fs';
-import path from 'path';
+
+import type { Coub } from '@coub-downloader/shared';
 import _ from 'lodash';
-import type { Coub } from 'types/coub';
-import { getIndexFile, getTemplateDir } from './paths';
 
-import renderer from './renderer';
+import { getTemplateFile } from './utils/paths';
 
-function render(profile: string, coubs: Coub[]): void {
-	const indexFile      = getIndexFile(profile);
-	const templates      = renderer.getTemplates();
-	const formattedCoubs = coubs.map((coub) => renderer.formatCoub(coub, templates));
-	const html           = renderer.format('index', { coubs : formattedCoubs.join('\n') }, templates);
-	fs.writeFileSync(indexFile, html);
+export const templates = {
+	index     : [ 'style', 'page', 'script' ] as const,
+	page      : [ 'content' ] as const,
+	style     : [ ] as const,
+	script    : [ ] as const,
+	coub      : [ 'video', 'audio', 'fullscreen', 'stats', 'title', 'externals' ] as const,
+	video     : [ 'permalink' ] as const,
+	audio     : [ 'permalink' ] as const,
+	fullscreen: [ ] as const,
+	stats     : [ 'likes', 'views' ] as const,
+	external  : [ 'service', 'url', 'title' ] as const,
+} as const;
+
+type TemplateName = keyof typeof templates;
+
+const allHTML = {} as Record<TemplateName, string>;	// eslint-disable-line @typescript-eslint/no-unsafe-type-assertion
+
+export function renderIndex(coubs: Coub[]): string {
+	const formattedCoubs = coubs.map(renderCoub);
+	const content        = formattedCoubs.join('\n');
+
+	const style  = render('style', {});
+	const script = render('script', {});
+	const page   = render('page', { content });
+	return render('index', { style, page, script });
 }
 
-function getTemplates(): Record<string, string> {
-	const templateDir = getTemplateDir();
+function renderCoub(coub: Coub): string {
+	const permalink = ensureStringSafe(coub.permalink, 'Coub ID');
+	const video     = render('video', { permalink });
 
-	return fs.readdirSync(templateDir).reduce<Record<string, string>>((obj, filename) => {
-		const name = filename.split('.')[0]!;
-		const html = fs.readFileSync(path.join(templateDir, filename)).toString().trim();
-		obj[name]  = html;
-		return obj;
-	}, {});
+	const audio = coub.file_versions.html5.audio && Object.keys(coub.file_versions.html5.audio).length > 0
+		? render('audio', { permalink })
+		: '';
+
+	const fullscreen = render('fullscreen', {});
+
+	const stats = render('stats', {
+		likes: coub.likes_count.toString(),
+		views: coub.views_count.toString(),
+	});
+
+	const title     = escapeString(coub.title);
+	const externals = coub.media_blocks.external_raw_videos.length === 0
+		? '&nbsp;'
+		: coub.media_blocks.external_raw_videos.map((external) => {
+				const service = ensureStringSafe(external.meta.service, 'Service name of external video');
+				const url     = external.url;
+				const title   = escapeString(external.title);
+				return render('external', { service, url, title });
+			}).join('\n');
+
+	return render('coub', { video, audio, fullscreen, stats, title, externals });
 }
 
-function formatCoub(coub: Coub, templates: Record<string, string>): string {
-	renderer.preventUnsafeString(coub.permalink, 'coub ID');
-
-	coub.title = renderer.escapeString(coub.title);
-
-	if (!coub.file_versions.html5.audio || Object.keys(coub.file_versions.html5.audio).length === 0) {
-		_.set(coub, 'audio', '&nbsp;');
-	}
-
-	if (coub.media_blocks.external_raw_videos.length === 0) {
-		_.set(coub, 'externals', '&nbsp;');
-	} else {
-		_.set(coub, 'externals', coub.media_blocks.external_raw_videos.map((external) => {
-			renderer.preventUnsafeString(external.meta.service, 'service name of external video');
-			external.title = renderer.escapeString(external.title);
-			return renderer.format('external', external, templates);
-		}).join('\n'));
-	}
-
-	return renderer.format('coub', coub, templates);
-}
-
-function preventUnsafeString(s: unknown, description: string): void {
+function ensureStringSafe(s: unknown, description: string): string {
 	if (typeof s !== 'string') {
 		throw new Error(`${description} is not string but ${typeof s} and might be unsafe: ${String(s)}`);
 	}
@@ -55,36 +68,49 @@ function preventUnsafeString(s: unknown, description: string): void {
 	if (!/^\w+$/.test(s)) {
 		throw new Error(`${description} is not alphanumeric string and might be unsafe: ${s}`);
 	}
-}
-
-function escapeString(s: string): string {
-	[
-		{ symbol : '&', entity : '&amp;' },
-		{ symbol : '"', entity : '&quot;' },
-		{ symbol : '<', entity : '&lt;' },
-		{ symbol : '>', entity : '&gt;' },
-	].forEach(({ symbol, entity }) => {
-		s = s.replaceAll(symbol, entity);
-	});
 
 	return s;
 }
 
-function format(rootTemplate: string, json: Record<string, unknown>, templates: Record<string, string>): string {
-	const regex = /\{\{([^}]+)\}\}/g;
+function escapeString(s: string | undefined): string | undefined {
+	if (typeof s === 'undefined') { return undefined; }
 
-	let html = templates[rootTemplate];
-
-	if (typeof html === 'undefined') {
-		throw new Error(`Template '${rootTemplate}' doesn't exist or empty`);
+	for (const { symbol, entity } of [
+		{ symbol: '&', entity: '&amp;' },
+		{ symbol: '"', entity: '&quot;' },
+		{ symbol: '<', entity: '&lt;' },
+		{ symbol: '>', entity: '&gt;' },
+	]) {
+		s = s.replaceAll(symbol, entity);
 	}
 
-	do {
-		html = html.replace(regex, (_match, key: string) => (_.get(json, key) || _.get(templates, key)) as string);
-	} while (regex.test(html));
+	return s;
+}
+
+// TODO: Use react
+function render<T extends TemplateName>(templateName: T, values: Record<typeof templates[T][number], string | undefined>): string {
+	let html        = getTemplate(templateName);
+	const allValues = values as Record<typeof templates[TemplateName][number], string | undefined>;
+
+	for (const variable of templates[templateName]) {
+		const value = allValues[variable];
+
+		if (typeof value === 'undefined') {
+			throw new Error(`Missing required value '${variable}' while rendering template '${templateName}'`);
+		}
+
+		html = html.replaceAll(`\${${variable}}`, value);
+	}
 
 	return html;
 }
 
-export { render };
-export default { render, getTemplates, formatCoub, preventUnsafeString, escapeString, format };
+function getTemplate(templateName: TemplateName): string {
+	if (!(templateName in allHTML)) {
+		const file            = getTemplateFile(templateName);
+		const template        = fs.readFileSync(file).toString().trim();
+		allHTML[templateName] = template;
+	}
+
+	return allHTML[templateName];
+}

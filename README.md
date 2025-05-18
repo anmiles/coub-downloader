@@ -39,4 +39,4 @@ You can create as many profiles as you want.
 ## Usage
 
 Open the file `output/index.html` in the browser.
-You can copy entire `output` folder and paste it anywhere or save to USB drive. This is your full backup of all your favourited or liked coubs in highest quality.
+You can copy entire `output` folder and paste it anywhere or save to USB drive. This is your full backup of all your favorite or liked coubs in highest quality.

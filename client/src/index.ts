@@ -1,23 +1,26 @@
-import type { CoubsType, CoubsJson } from 'types/coubs';
-import type { ModalPopup } from 'types/modalPopup';
-import type {} from 'types/window';
+import type { CoubsJson, CoubsType, ModalPopup } from '@coub-downloader/shared';
 
-// eslint-disable-next-line import/exports-last -- back-compatibility for usage instructions
+declare global {
+	interface Window {
+		ModalPopup: ModalPopup;
+		jQuery: typeof jQuery;
+	}
+}
+
 export class DownloadCoubClient {
-	async sleep(milliSeconds: number): Promise<void> {
-		return new Promise((resolve) => {
-			setTimeout(resolve, milliSeconds);
-		});
+	async sleep(ms: number): Promise<void> {
+		return new Promise((resolve) => setTimeout(resolve, ms));
 	}
 
 	/* istanbul ignore next */
 	showPopup(): ModalPopup {
-		return window.ModalPopup.show({ content : 'Downloading...', classes : 'modal--disabled' });
+		return window.ModalPopup.show({ content: 'Downloading...', classes: 'modal--disabled' });
 	}
 
 	/* istanbul ignore next */
 	async getJSON(url: string): Promise<CoubsJson> {
-		return await window.jQuery.get(url) as CoubsJson;
+		// eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
+		return await window.jQuery.get(url) as unknown as CoubsJson;
 	}
 
 	async downloadCoubs(coubs: unknown[], type: CoubsType, modalPopup: ModalPopup, interval: number): Promise<void> {

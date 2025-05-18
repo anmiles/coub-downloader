@@ -2,14 +2,8 @@
 	"extends" : "./node_modules/@anmiles/tsconfig/tsconfig.json",
 
 	"include" : [
-		"client",
+		"shared",
 		"server",
-		"types"
+		"client",
 	],
-
-	"compilerOptions" : {
-		"paths" : {
-			"types/*" : [ "./types/*" ]
-		}
-	}
 }

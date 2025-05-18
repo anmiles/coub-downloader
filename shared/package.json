@@ -1,0 +1,35 @@
+{
+	"name": "@coub-downloader/shared",
+	"version": "0.1.0",
+	"description": "Download favorite and liked coubs into local html file",
+	"private": true,
+	"author": "Anatoliy Oblaukhov",
+	"homepage": "https://github.com/anmiles/coub-downloader/tree/main/shared",
+	"repository": "github:anmiles/coub-downloader",
+	"license": "MIT",
+	"engines": {
+		"node": ">=20.19.0"
+	},
+	"main": "./dist/server/index.js",
+	"module": "./dist/client/index.js",
+	"scripts": {
+		"prebuild": "rimraf dist",
+		"build": "npm-run-all build:*",
+		"build:server": "tsc -p ./tsconfig.build.server.json",
+		"build:client": "tsc -p ./tsconfig.build.client.json",
+		"test": "exit 0",
+		"test:coverage": "exit 0",
+		"test:ci": "exit 0",
+		"test:watch": "exit 0",
+		"test:watch:coverage": "exit 0",
+		"test:report:coverage": "exit 0"
+	},
+	"dependencies": {
+		"npm-run-all": "^4.1.5",
+		"zod": "^3.24.4"
+	},
+	"devDependencies": {
+		"rimraf": "^6.0.1",
+		"typescript": "^5.8.3"
+	}
+}

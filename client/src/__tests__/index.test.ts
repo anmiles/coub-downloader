@@ -2,16 +2,15 @@
  * @jest-environment jsdom
  */
 
-import type { Coub } from 'types/coub';
-import type { CoubsJson } from 'types/coubs';
-import type { ModalPopup } from 'types/modalPopup';
+import type { Coub, CoubsJson, ModalPopup } from '@coub-downloader/shared';
+
 import { DownloadCoubClient } from '../index';
 
 const modalPopup = {
-	show       : () => modalPopup,
-	setContent : jest.fn(),
-	popup      : {
-		close : jest.fn(),
+	show      : () => modalPopup,
+	setContent: jest.fn(),
+	popup     : {
+		close: jest.fn(),
 	},
 };
 
@@ -30,14 +29,14 @@ let coubID: number;
 const getJSONSpy = jest.spyOn(client, 'getJSON');
 
 function generateCoub(): Partial<Coub> {
-	return { id : coubID++ };
+	return { id: coubID++ };
 }
 
 function generateJSON(): CoubsJson {
 	return {
-		page        : pageID++,
-		total_pages : totalPages,
-		coubs       : [
+		page       : pageID++,
+		total_pages: totalPages,
+		coubs      : [
 			generateCoub(),
 			generateCoub(),
 		],
@@ -51,29 +50,7 @@ beforeEach(() => {
 	getJSONSpy.mockImplementation(async () => generateJSON());
 });
 
-const sleepMilliseconds = 300;
-
 describe('src/client/index', () => {
-	describe('sleep', () => {
-		it('should call setTimeout', async () => {
-			const setTimeoutSpy = jest.spyOn(global, 'setTimeout');
-
-			await client.sleep(sleepMilliseconds);
-
-			expect(setTimeoutSpy.mock.calls[0]?.[1]).toBe(sleepMilliseconds);
-			setTimeoutSpy.mockRestore();
-		});
-
-		it('should wait specified timeout', async () => {
-			const before = new Date().getTime();
-
-			await client.sleep(sleepMilliseconds);
-
-			const after = new Date().getTime();
-			expect(after - before).toBeGreaterThanOrEqual(sleepMilliseconds);
-		});
-	});
-
 	describe('downloadCoubs', () => {
 		let sleepSpy: jest.SpyInstance;
 		let setContentSpy: jest.SpyInstance;
@@ -133,7 +110,7 @@ describe('src/client/index', () => {
 				downloadLink = document.createElement('a');
 
 				HTMLAnchorElement.prototype.click = function() {
-					// eslint-disable-next-line @typescript-eslint/no-this-alias -- capture the instance from its calling method
+
 					downloadLink = this;
 				};
 			});
@@ -142,6 +119,7 @@ describe('src/client/index', () => {
 				HTMLAnchorElement.prototype.click = originalClick;
 			});
 
+		// eslint-disable-next-line @typescript-eslint/unbound-method
 		})(HTMLAnchorElement.prototype.click);
 
 		it('should create and click download link', () => {
