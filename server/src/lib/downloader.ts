@@ -1,10 +1,10 @@
 import fs from 'fs';
 
 import { download } from '@anmiles/downloader';
-import { validate } from '@anmiles/express-tools';
 import { info, log } from '@anmiles/logger';
 import '@anmiles/prototypes';
 import sleep from '@anmiles/sleep';
+import { validate } from '@anmiles/zod-tools';
 import { coubSchema } from '@coub-downloader/shared';
 import type { Coub, CoubFile } from '@coub-downloader/shared';
 
