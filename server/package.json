@@ -23,12 +23,12 @@
 		"create": "node ./dist/create.js"
 	},
 	"dependencies": {
-		"@anmiles/downloader": "^6.0.0",
-		"@anmiles/express-tools": "^1.0.0",
-		"@anmiles/logger": "^8.0.0",
-		"@anmiles/prototypes": "^11.0.0",
-		"@anmiles/sleep": "^5.0.0",
-		"@anmiles/zod-tools": "^1.0.0",
+		"@anmiles/downloader": "^6.0.2",
+		"@anmiles/express-tools": "^2.0.4",
+		"@anmiles/logger": "^8.0.2",
+		"@anmiles/prototypes": "^11.2.3",
+		"@anmiles/sleep": "^5.0.2",
+		"@anmiles/zod-tools": "^1.0.3",
 		"@coub-downloader/shared": "*",
 		"lodash": "^4.17.21"
 	},

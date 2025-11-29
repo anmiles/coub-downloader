@@ -21,7 +21,7 @@
 		"test:report:coverage": "nyc report"
 	},
 	"dependencies": {
-		"@anmiles/sleep": "^5.0.0",
+		"@anmiles/sleep": "^5.0.2",
 		"@coub-downloader/shared": "*"
 	},
 	"devDependencies": {

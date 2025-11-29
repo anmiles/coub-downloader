@@ -146,7 +146,7 @@ describe('src/lib/downloader', () => {
 
 			const func = async (): Promise<void> => downloadAllCoubs(profile);
 
-			await expect(func).rejects.toEqual(new Error('Validation failed: permalink (Required)'));
+			await expect(func).rejects.toEqual(new Error('Validation failed:\n\tpermalink (Required)'));
 		});
 
 		it('should throw if coub file does not exist', async () => {
