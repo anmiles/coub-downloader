@@ -112,7 +112,7 @@ describe('src/lib/downloader', () => {
 				[coubsFile]: JSON.stringify([ wrongCoub ]),
 			});
 
-			const func = async (): Promise<void> => downloadAllCoubs(profile);
+			const func = downloadAllCoubs(profile);
 
 			await expect(func).rejects.toEqual(new Error(error));
 		});
@@ -130,7 +130,7 @@ describe('src/lib/downloader', () => {
 				[coubsFile]: JSON.stringify([ wrongCoub ]),
 			});
 
-			const func = async (): Promise<void> => downloadAllCoubs(profile);
+			const func = downloadAllCoubs(profile);
 
 			await expect(func).rejects.toEqual(new Error('There are no file_versions.html5.video for coub incorrect'));
 		});
@@ -144,15 +144,15 @@ describe('src/lib/downloader', () => {
 				[coubsFile]: JSON.stringify([ wrongCoub ]),
 			});
 
-			const func = async (): Promise<void> => downloadAllCoubs(profile);
+			const func = downloadAllCoubs(profile);
 
-			await expect(func).rejects.toEqual(new Error('Validation failed:\n\tpermalink (Required)'));
+			await expect(func).rejects.toEqual(new Error('Validation failed:\n\tpermalink (Invalid input: expected string, received undefined)'));
 		});
 
 		it('should throw if coub file does not exist', async () => {
 			mockFs({});
 
-			const func = async (): Promise<void> => downloadAllCoubs(profile);
+			const func = downloadAllCoubs(profile);
 
 			await expect(func).rejects.toEqual(new Error(`Coubs json input${path.sep}username.json doesn't exist. Refer to README.md in order to obtain it`));
 		});
