@@ -3,8 +3,8 @@ import path from 'path';
 import type { templates } from '../renderer';
 
 const dirPaths = {
-	input    : 'input',
-	output   : 'output',
+	input    : '../input',
+	output   : '../output',
 	// TODO: Remove this hack after moving to React
 	templates: path.relative(process.cwd(), path.join(__dirname, '../../templates')),
 };

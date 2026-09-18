@@ -1,9 +1,10 @@
 import type { CoubsJson, CoubsType, ModalPopup } from '@coub-downloader/shared';
+import type JQueryStatic from 'jquery';
 
 declare global {
 	interface Window {
 		ModalPopup: ModalPopup;
-		jQuery: typeof jQuery;
+		jQuery: JQueryStatic;
 	}
 }
 

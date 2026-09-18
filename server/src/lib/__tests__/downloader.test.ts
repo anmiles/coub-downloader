@@ -75,16 +75,37 @@ describe('src/lib/downloader', () => {
 		it('should download all expected files', async () => {
 			await downloadAllCoubs(profile);
 
-			expect(profileDir).toMatchFiles({
-				'output/username/index.html': '<html>page</html>',
+			const downloadedFiles = {
+				'../output/username/index.html': '<html>page</html>',
 
-				'output/username/media/testID1/testID1.jpg': 'https://coub-anubis-a.akamaized.net/poster-1.jpg',
-				'output/username/media/testID1/testID1.mp4': 'https://coub-anubis-a.akamaized.net/high-1.mp4',
+				'../output/username/media/testID1/testID1.jpg': 'https://coub-anubis-a.akamaized.net/poster-1.jpg',
+				'../output/username/media/testID1/testID1.mp4': 'https://coub-anubis-a.akamaized.net/high-1.mp4',
 
-				'output/username/media/testID2/testID2.jpg': 'https://coub-anubis-a.akamaized.net/poster-2.jpg',
-				'output/username/media/testID2/testID2.mov': 'https://coub-anubis-a.akamaized.net/high-2.mov',
-				'output/username/media/testID2/testID2.mp3': 'https://coub-attachments.akamaized.net/high-2.mp3',
-			});
+				'../output/username/media/testID2/testID2.jpg': 'https://coub-anubis-a.akamaized.net/poster-2.jpg',
+				'../output/username/media/testID2/testID2.mov': 'https://coub-anubis-a.akamaized.net/high-2.mov',
+				'../output/username/media/testID2/testID2.mp3': 'https://coub-attachments.akamaized.net/high-2.mp3',
+			};
+
+			expect(profileDir).toMatchFiles(downloadedFiles);
+			expect(download).toHaveBeenCalledTimes(5);
+
+			Object.entries(downloadedFiles)
+				.filter(([ file ]) => file.includes('/media/'))
+				.forEach(([ file, url ]) => {
+					const normalizedFile = path.join(...file.split('/'));
+					expect(download).toHaveBeenCalledWith(url, normalizedFile);
+				});
+		});
+
+		it('should call download method on each media file except already existing ones', async () => {
+			const existingFile = '../output/username/media/testID2/testID2.mov';
+
+			fs.mkdirSync(path.dirname(existingFile), { recursive: true });
+			fs.writeFileSync(existingFile, '');
+
+			await downloadAllCoubs(profile);
+
+			expect(download).toHaveBeenCalledTimes(4);
 		});
 
 		it('should throttle downloads', async () => {
@@ -154,7 +175,7 @@ describe('src/lib/downloader', () => {
 
 			const func = downloadAllCoubs(profile);
 
-			await expect(func).rejects.toEqual(new Error(`Coubs json input${path.sep}username.json doesn't exist. Refer to README.md in order to obtain it`));
+			await expect(func).rejects.toEqual(new Error(`Coubs json ..${path.sep}input${path.sep}username.json doesn't exist. Refer to README.md in order to obtain it`));
 		});
 	});
 });
